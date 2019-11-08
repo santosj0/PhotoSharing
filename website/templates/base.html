@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" id="bootstrap-override">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Other Information -->
+    <title ng-bind="$state.current.data.pageTitle"></title>
+    <base href="/">
+
+    <!-- Fav Icon -->
+    <link rel="icon">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.22/angular-ui-router.min.js"></script>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="static/app.js"></script>
+    <script type="text/javascript" src="static/controllers.js"></script>
+    <script type="text/javascript" src="static/directives.js"></script>
+
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="static/style.css">
+
+</head>
+<body class="bg-dark text-primary">
+    <!-- Navbar -->
+    <h1>Base Page</h1>
+
+    <!-- View -->
+    <div ui-view></div>
+
+</body>
+</html>
