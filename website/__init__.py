@@ -4,6 +4,7 @@
 from flask import Flask, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_bcrypt import Bcrypt
 from website.config import BaseConfig
 
 # Configure the application
@@ -13,6 +14,7 @@ app.config.from_object(BaseConfig)
 # Create Object Variables
 ma = Marshmallow(app)
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 # Import Blueprints
 from website.blueprints.routes import routes

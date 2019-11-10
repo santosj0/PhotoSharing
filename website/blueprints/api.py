@@ -2,7 +2,7 @@ import website.functions.folders as fd
 import website.models as wm
 from os import getcwd
 from flask import jsonify, Blueprint, request
-from website import db
+from website import db, bcrypt
 from sqlalchemy.exc import SQLAlchemyError
 
 # Set up Blueprint
@@ -18,7 +18,7 @@ def insert_user():
     # Retreive Form Data
     json_data = request.json
     username = json_data['username']
-    password = json_data['password']
+    password = bcrypt.generate_password_hash(json_data['password'])
     email = json_data['email']
     profile_pic = json_data['profilepic']
 
