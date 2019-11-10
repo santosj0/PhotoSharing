@@ -9,6 +9,9 @@ share their images as well.
 [![database-mysql](https://img.shields.io/badge/Database-MySQL-darkblue.svg)](https://www.mysql.com/)
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
 
+<details>
+<summary>Table of Content</summary>
+
 #### Table of Content
 - [Routes](#routes)
 - [API](#api)
@@ -22,7 +25,8 @@ share their images as well.
         - [Tags Photos](#tags-photos)
     - [Views](#views)
     - [Stored Procedures](#stored-procedures)
----
+</details>
+
 ## Routes
 
 ## API
@@ -32,7 +36,7 @@ share their images as well.
 
 ### Tables
 #### Users
-Table name: <span style="color: green">users</span>
+Table name: users
 
 
 ### Views
