@@ -15,7 +15,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         $stateProvider.
             state('home', {
                 data : { pageTitle : 'Homepage'},
-                templateUrl : '../static/partials/home.html',
+                templateUrl : 'static/angular_partials/home.html',
                 url : '/'
             }).
             state('test', {

@@ -1,4 +1,3 @@
-import getpass
 from sshtunnel import SSHTunnelForwarder
 
 
@@ -9,14 +8,12 @@ def tunnelServer():
     """
 
     # Get network information
-    host = input("Enter host:\n")
-    port = int(input("Enter host port:\n"))
-
-    username = input("Network Username:\n")
-    try:
-        password = getpass.getpass(prompt="Network Password:\n")
-    except getpass.GetPassWarning as error:
-        exit()
+    with open('login.txt') as login:
+        file = login.read().splitlines()
+        host = file[0]
+        port = int(file[1])
+        username = file[2]
+        password = file[3]
 
     # Retrieve server information
     server = SSHTunnelForwarder(
