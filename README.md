@@ -1,4 +1,4 @@
-#PhotoSharing
+# PhotoSharing
 > A Photo sharing website where a user is able to browse the collection of images uploaded by other users, or decide to
 share their images as well.
 
@@ -12,19 +12,20 @@ share their images as well.
 <details>
 <summary>Table of Content</summary>
 
-#### Table of Content
-- [Routes](#routes)
-- [API](#api)
-- [MySQL](#mysql)
-    - [Tables](#tables)
-        - [Users](#users)
-        - [Photos](#photos)
-        - [Comments](#comments)
-        - [Profile Picture](#profile-picture)
-        - [Tags](#tags)
-        - [Tags Photos](#tags-photos)
-    - [Views](#views)
-    - [Stored Procedures](#stored-procedures)
+## Table of Content
+- [PhotoSharing](#photosharing)
+    - [Routes](#routes)
+    - [API](#api)
+    - [MySQL](#mysql)
+        - [Tables](#tables)
+            - [Users](#users)
+            - [Photos](#photos)
+            - [Comments](#comments)
+            - [Profile Picture](#profile-picture)
+            - [Tags](#tags)
+            - [Tags Photos](#tags-photos)
+        - [Views](#views)
+        - [Stored Procedures](#stored-procedures)
 </details>
 
 ## Routes
@@ -32,12 +33,7 @@ share their images as well.
 ## API
 
 ## MySQL
-> The run down of what to expect in the photosharing.sql file
-
 ### Tables
-#### Users
-Table name: users
-
 
 ### Views
 

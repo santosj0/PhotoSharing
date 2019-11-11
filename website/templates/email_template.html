@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activation Email</title>
+
+    <style>
+
+        body {
+
+        }
+
+        .container {
+            background-color: lightgray;
+            font-size: 4vw;
+        }
+
+        .header, .footer {
+            background-color: #6db4ec;
+        }
+
+        .header {
+            display: flex;
+        }
+
+        .header > .header-image {
+            width: 40%;
+            image-rendering: pixelated;
+        }
+
+        .header > .header-image > img {
+            width: 100%;
+            display: block;
+            margin: auto;
+        }
+
+        .header > .header-title {
+            width: 50%;
+            margin: auto;
+        }
+
+        .header > .header-title > h1 {
+            font-size: 5vw;
+            text-align: center;
+        }
+
+        .body {
+            background-color: white;
+            width: 80%;
+            margin: 2vh auto 2vh auto;
+            padding: 3vh 3vw;
+            border-radius: 2.5vw;
+        }
+
+        .footer {
+            display: inline-block;
+            width: 100%;
+            font-size: 2vw;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-image">
+                <img src="../static/images/defaults/default01.png">
+            </div>
+            <div class="header-title">
+                <h1>{% block title %}{% endblock %}</h1>
+            </div>
+        </div>
+        <div class="body">
+
+            {% block body %}{% endblock %}
+        </div>
+        <div class="footer">
+            <p>Just some clean up stuff.</p>
+            <p>This email was sent to: {Insert email here}. Please do not reply to this email as this address is not monitored.</p>
+            <p>Copy right stuff here.</p>
+            <p>Company address?</p>
+        </div>
+    </div>
+</body>
+</html>
