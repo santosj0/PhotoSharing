@@ -66,14 +66,13 @@
     <div class="container">
         <div class="header">
             <div class="header-image">
-                <img src="http://elvis.rowan.edu/~santosj0/awp/homework3/PhotoSharing/website/static/images/defaults/default01.png">
+                <img src="{{ url_for('static', filename='/images/defaults/default01.png') }}">
             </div>
             <div class="header-title">
                 <h1>{% block title %}{% endblock %}</h1>
             </div>
         </div>
         <div class="body">
-
             {% block body %}{% endblock %}
         </div>
         <div class="footer">

@@ -1,19 +1,16 @@
 from sshtunnel import SSHTunnelForwarder
+from website.functions.read_login_file import get_database_information, get_network_information
 
 
-def tunnelServer():
+def tunnel_server():
     """
     Creates a tunnel to a server
     :return: Server information
     """
 
     # Get network information
-    with open('login.txt') as login:
-        file = login.read().splitlines()
-        host = file[0]
-        port = int(file[1])
-        username = file[2]
-        password = file[3]
+    host, port = get_database_information()
+    username, password = get_network_information()
 
     # Retrieve server information
     server = SSHTunnelForwarder(

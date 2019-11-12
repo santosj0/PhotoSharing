@@ -15,20 +15,3 @@ def index(path):
 @routes.route('/activate')
 def world():
     return render_template('/partials/emails/activation.html')
-
-
-@routes.route('/sendMail')
-def send_mail():
-    try:
-        msg = Message('Python Test',
-                      recipients=['photosharingrowanuniversity@gmail.com'])
-        html = render_template('/partials/emails/activation.html')
-        msg.html = html
-        mail.send(msg)
-        result = 1
-    except Exception:
-        result = 0
-
-    return result
-
-

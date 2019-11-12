@@ -1,43 +1,16 @@
 import website.functions.folders as fd
 import website.models as wm
 from os import getcwd
-from flask import jsonify, Blueprint, request, render_template
-from website import db, bcrypt, mail
-from flask_mail import Message
+from flask import jsonify, Blueprint, request
+from website import db, bcrypt
 from smtplib import SMTPException
 from sqlalchemy.exc import SQLAlchemyError
+from website.functions.email import send_mail
+import website.functions.tokens as fd_token
+from itsdangerous.exc import SignatureExpired, BadTimeSignature
 
 # Set up Blueprint
 api = Blueprint('api', __name__)
-
-
-def send_mail(subject, recipient, body=None, html=None):
-    """
-    General template for sending emails
-    :param subject: Email subject as a string
-    :param recipient: The user being sent the mail to
-    :param body: Optional. Email body as a string
-    :param html: Optional. Path location where the html will be rendered
-    :return: Integer result whether or not this succeeded
-    """
-    try:
-        msg = Message(subject,
-                      recipients=[recipient])
-
-        if html is not None:
-            html = render_template(html)
-            msg.html = html
-
-        if body is not None:
-            msg.body = body
-
-        mail.send(msg)
-
-        result = 1
-    except SMTPException:
-        result = 0
-
-    return result
 
 
 @api.route('/register', methods=['GET', 'POST'])
@@ -70,34 +43,58 @@ def insert_user():
         cursor.close()
 
         if result == 0:
-            raise SQLAlchemyError("Error with the Procedure")
+            raise SQLAlchemyError("Username or Password Exists")
 
         # Generate the folders
         # Make function to make sure that folders don't exist
-        path = fd.move_up(getcwd(), "\\", 1) + "\\static\\images\\users"
-        upath = fd.make_folder(path, "\\" + username)
-        fd.make_folder(upath, "\\profile_pic")
-        fd.make_folder(upath, "\\uploads")
-
-        result = send_mail('PhotoSharing - Please activate your account', email, html='/partials/emails/activation.html')
+        path = getcwd() + "\\static\\images\\users"
+        result = fd.generate_user_folders(path, '\\', username)
 
         if result == 0:
-            raise SMTPException()
+            raise FileExistsError("User Folders Already Exist")
+
+        # Serializes/Generates the token
+        # Suppose to use email, but since email is not unique, we use username
+        token = fd_token.generate_confirmation_token(username)
+
+        # Sends the mail
+        result = send_mail('PhotoSharing - Please activate your account',
+                           email,
+                           html='/partials/emails/activation.html',
+                           links={'confirmation_token': 'http://localhost:5000/api/confirm_email/' + token})
+
+        if result == 0:
+            raise SMTPException("Email not valid")
 
         # Add everything to the database
         connection.commit()
+        result = 1
 
     # Rollback in case anything happens
     except (FileExistsError, FileNotFoundError, SQLAlchemyError, SMTPException) as e:
-        result = 0
+        # Store the error
+        result = e
+
+        # Remove the information from the database
         connection.rollback()
-        print(e)
 
     # Closes the connection to the database
     finally:
         connection.close()
 
     return jsonify({'result': result})
+
+
+@api.route('/confirm_user/<token>')
+def validate_user(token):
+    try:
+        username = fd_token.confirm_token(token, expiration=86400)
+    except SignatureExpired:
+        return "Token is expired"
+    except BadTimeSignature:
+        return "Token provided is not valid"
+
+    return "The token is successful"
 
 
 @api.route('/getUsers')

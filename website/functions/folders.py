@@ -37,14 +37,12 @@ def generate_user_folders(path, separator, username):
         upath = make_folder(path, separator + username)
         make_folder(upath, separator + "profile_pic")
         make_folder(upath, separator + "uploads")
+        result = 1
     except FileExistsError:
-        rmtree(path, separator, username)
+        result = 0
+
+    return result
 
 
 def delete_user_folders(path, separator, username):
     rmtree(path + separator + username)
-
-
-if __name__ == "__main__":
-    generate_user_folders(os.getcwd(), '\\', 'tony')
-    # delete_user_folders(os.getcwd(), '\\', 'tony')
