@@ -19,12 +19,16 @@ def world():
 
 @routes.route('/sendMail')
 def send_mail():
-    msg = Message('Python Test',
-                  recipients=['photosharingrowanuniversity@gmail.com'])
-    html = render_template('/partials/emails/activation.html')
-    msg.html = html
-    mail.send(msg)
+    try:
+        msg = Message('Python Test',
+                      recipients=['photosharingrowanuniversity@gmail.com'])
+        html = render_template('/partials/emails/activation.html')
+        msg.html = html
+        mail.send(msg)
+        result = 1
+    except Exception:
+        result = 0
 
-    return html
+    return result
 
 

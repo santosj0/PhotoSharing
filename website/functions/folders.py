@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 
 def move_up(path, separator, amount):
@@ -29,3 +30,21 @@ def make_folder(start_path, directory):
     os.mkdir(location, 0o755)
 
     return location
+
+
+def generate_user_folders(path, separator, username):
+    try:
+        upath = make_folder(path, separator + username)
+        make_folder(upath, separator + "profile_pic")
+        make_folder(upath, separator + "uploads")
+    except FileExistsError:
+        rmtree(path, separator, username)
+
+
+def delete_user_folders(path, separator, username):
+    rmtree(path + separator + username)
+
+
+if __name__ == "__main__":
+    generate_user_folders(os.getcwd(), '\\', 'tony')
+    # delete_user_folders(os.getcwd(), '\\', 'tony')
