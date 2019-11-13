@@ -12,6 +12,7 @@ def index(path):
     return make_response(open('templates/base.html').read())
 
 
+# Email activation template
 @routes.route('/activate')
 def world():
     return render_template('/partials/emails/activation.html')

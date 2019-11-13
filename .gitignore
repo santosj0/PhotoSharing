@@ -1,3 +1,6 @@
+# Ignored virtual environment
+venv
+
 # Login file
 login.txt
 

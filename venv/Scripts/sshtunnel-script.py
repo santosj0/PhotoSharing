@@ -1,4 +1,4 @@
-#!"C:\Users\santo\Desktop\Advanced Web Programming\PhotoSharing\venv\Scripts\python.exe"
+#!"C:\Pycharm Projects\PhotoSharing\venv\Scripts\python.exe"
 # EASY-INSTALL-ENTRY-SCRIPT: 'sshtunnel==0.1.5','console_scripts','sshtunnel'
 __requires__ = 'sshtunnel==0.1.5'
 import re
