@@ -2,10 +2,10 @@ from flask import Blueprint, make_response, render_template, send_file, url_for
 from website import mail
 from flask_mail import Message
 
-routes = Blueprint('blueprints', __name__)
+routes = Blueprint('routes', __name__)
 
 
-# Angular Redirect
+# Homepage redirect
 @routes.route('/', defaults={'path': ''})
 @routes.route("/<path:path>")
 def index(path):

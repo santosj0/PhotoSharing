@@ -1,6 +1,7 @@
 import website.functions.folders as fd
 import website.models as wm
 from website import db, bcrypt
+from website.blueprints.decorators import login_required
 from website.functions.email import send_mail
 from smtplib import SMTPException
 import website.functions.tokens as fd_token
@@ -15,10 +16,8 @@ api = Blueprint('api', __name__)
 
 
 @api.route('/login', methods=['GET', 'POST'])
+@login_required(None)
 def login_user():
-    if session.get('logged_in'):
-        return jsonify({'result': 'Already logged in'})
-
     # Retrieve Form Data
     if request.method == 'POST':
         json_data = request.json
@@ -49,6 +48,7 @@ def login_user():
 
 
 @api.route('/logout')
+@login_required()
 def logout_user():
     if session.get('logged_in'):
         session.pop('logged_in')
@@ -59,25 +59,19 @@ def logout_user():
     return jsonify({'result': result})
 
 
-@api.route('/register', methods=['GET', 'POST'])
+@api.route('/register', methods=['POST'])
+@login_required(None)
 def insert_user():
     """
     Inserts a new user into the database
     :return: A Json response with whether or not this function succeeded
     """
     # Retrieve Form Data
-    if request.method == 'POST':
-        json_data = request.json
-        username = json_data['username']
-        password = bcrypt.generate_password_hash(json_data['password']).decode('utf-8')
-        email = json_data['email']
-        profile_pic = json_data['profilepic']
-    else:
-        params = request.args
-        username = params.get('username')
-        password = bcrypt.generate_password_hash(params.get('password')).decode('utf-8')
-        email = params.get('email')
-        profile_pic = params.get('profilepic')
+    json_data = request.json
+    username = json_data['username']
+    password = bcrypt.generate_password_hash(json_data['password']).decode('utf-8')
+    email = json_data['email']
+    profile_pic = json_data['profilepic']
 
     # Establish connection to the database
     connection = db.engine.raw_connection()
@@ -131,6 +125,7 @@ def insert_user():
 
 
 @api.route('/confirm_user/<token>')
+@login_required(None)
 def validate_user(token):
     """
     Validates the user
@@ -162,6 +157,7 @@ def validate_user(token):
 
 
 @api.route('/getUsers')
+@login_required()
 def get_users():
     """
     Example for getting all the users
