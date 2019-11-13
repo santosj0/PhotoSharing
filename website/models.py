@@ -8,20 +8,24 @@ BASE = db.Model
 
 
 # User Class
-class User(BASE):
-    __tablename__ = 'users'
+class UserLogin(BASE):
+    __tablename__ = 'login_register'
 
     user_id = db.Column('user_id', db.Integer, nullable=False, primary_key=True)
     username = db.Column('username', db.String(45), nullable=False)
     password = db.Column('password', db.String(45), nullable=False)
     email = db.Column('email', db.String(45), nullable=False)
+    is_verified = db.Column('is_verified', db.Boolean, nullable=False)
+    verified_sent = db.Column('verified_sent', db.DATETIME)
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, password, email, is_verified, verified_sent):
         self.username = username
         self.password = password
         self.email = email
+        self.is_verified = is_verified
+        self.verified_sent = verified_sent
 
 
-class UserSchema(ma.ModelSchema):
+class UserLoginSchema(ma.ModelSchema):
     class Meta:
-        model = User
+        model = UserLogin

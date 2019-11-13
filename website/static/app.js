@@ -10,7 +10,12 @@ app.config(function($interpolateProvider){
 // Routing
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     function($stateProvider, $urlRouterProvider, $locationProvider){
-        $urlRouterProvider.otherwise('/404');
+        // Bad Url
+        $urlRouterProvider.otherwise(function($injector, $location){
+            var state = $injector.get('$state');
+            state.go('404');
+            return $location.path();
+        });
 
         $stateProvider.
             state('home', {
@@ -26,7 +31,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             state('404', {
                 data : { pageTitle : 'Error 404'},
                 template : 'error 404',
-                url : '/404'
             });
 
             $locationProvider.html5Mode(true);
