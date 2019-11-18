@@ -13,7 +13,7 @@ def move_up(path, separator, amount):
     return path.rsplit(separator, amount)[0]
 
 
-def make_folder(start_path, directory):
+def make_folder(location):
     """
     Generates a directory at desired path location
     :param start_path: Initial path where the diretory will be created
@@ -23,20 +23,17 @@ def make_folder(start_path, directory):
     :return: Location of the new directory that was created
     """
 
-    # Set the location to make the folders
-    location = start_path + directory
-
     # Creates the folder
     os.mkdir(location, 0o755)
 
     return location
 
 
-def generate_user_folders(path, separator, username):
+def generate_user_folders(path, username):
     try:
-        upath = make_folder(path, separator + username)
-        make_folder(upath, separator + "profile_pic")
-        make_folder(upath, separator + "uploads")
+        upath = make_folder(os.path.join(path, username))
+        make_folder(os.path.join(upath, "profile_pic"))
+        make_folder(os.path.join(upath, "uploads"))
         result = 1
     except FileExistsError:
         result = 0
@@ -44,5 +41,5 @@ def generate_user_folders(path, separator, username):
     return result
 
 
-def delete_user_folders(path, separator, username):
-    rmtree(path + separator + username)
+def delete_user_folders(path, username):
+    rmtree(os.path.join(path, username))

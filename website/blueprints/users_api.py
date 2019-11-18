@@ -1,32 +1,33 @@
 import website.functions.folders as fd
 import website.models as wm
+import os
 from website import db, bcrypt
-from website.blueprints.decorators import login_required
+from website.blueprints.decorators import login_required, html_escape_values
 from website.functions.email import send_mail
 from smtplib import SMTPException
 import website.functions.tokens as fd_token
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
-from os import getcwd
 from flask import jsonify, Blueprint, request, session
 from sqlalchemy.exc import SQLAlchemyError
 
 
-# Set up Blueprint
-api = Blueprint('api', __name__)
+# Set up users blueprint
+users = Blueprint('users', __name__)
 
 
-@api.route('/login', methods=['GET', 'POST'])
+@users.route('/login', methods=['POST'])
 @login_required(None)
-def login_user():
+@html_escape_values
+def login_user(**kwargs):
+    """
+    Logs the user to allow access to restricted pages
+    :param kwargs: 'request_get' is a dictionary of html safe parameters
+    :return: Status of login
+    """
     # Retrieve Form Data
-    if request.method == 'POST':
-        json_data = request.json
-        login_name = json_data['login_name']
-        password = json_data['password']
-    else:
-        params = request.args
-        login_name = params.get('login_name')
-        password = params.get('password')
+    params = kwargs['request_get']
+    login_name = params.get('login_name')
+    password = params.get('password')
 
     # UserLogin View
     user_login = wm.UserLogin
@@ -40,6 +41,7 @@ def login_user():
     # Makes sure that the user exists and that the password matches
     if password2 and bcrypt.check_password_hash(password2[0], password):
         session['logged_in'] = True
+        session['username'] = login_name
         result = 'Logged in'
     else:
         result = 'Username or Password does not match'
@@ -47,31 +49,38 @@ def login_user():
     return jsonify({'result': result})
 
 
-@api.route('/logout')
+@users.route('/logout')
 @login_required()
 def logout_user():
+    """
+    Removes a user from the session
+    :return: Result of whether or not the user was able to be logged out
+    """
     if session.get('logged_in'):
-        session.pop('logged_in')
+        for key in session.key():
+            session.pop(key)
         result = 'Logged Out'
     else:
-        result = 'User not logged in'
+        result = 'Unable to log out the user'
 
     return jsonify({'result': result})
 
 
-@api.route('/register', methods=['POST'])
+@users.route('/register', methods=['POST'])
 @login_required(None)
-def insert_user():
+@html_escape_values
+def insert_user(**kwargs):
     """
     Inserts a new user into the database
+    :param kwargs: 'request_get' is a dictionary of html safe parameters
     :return: A Json response with whether or not this function succeeded
     """
     # Retrieve Form Data
-    json_data = request.json
-    username = json_data['username']
-    password = bcrypt.generate_password_hash(json_data['password']).decode('utf-8')
-    email = json_data['email']
-    profile_pic = json_data['profilepic']
+    params = kwargs['request_get']
+    username = params['username']
+    password = bcrypt.generate_password_hash(params['password']).decode('utf-8')
+    email = params['email']
+    profile_pic = params['profilepic']
 
     # Establish connection to the database
     connection = db.engine.raw_connection()
@@ -86,8 +95,8 @@ def insert_user():
 
         # Generate the folders
         # Make function to make sure that folders don't exist
-        path = getcwd() + "\\static\\images\\users"
-        result = fd.generate_user_folders(path, '\\', username)
+        path = os.path.join(os.getcwd(), "static", "images", "users")
+        result = fd.generate_user_folders(path, username)
 
         if result == 0:
             raise FileExistsError("User Folders Already Exist")
@@ -124,7 +133,7 @@ def insert_user():
     return jsonify({'result': result})
 
 
-@api.route('/confirm_user/<token>')
+@users.route('/confirm_user/<token>')
 @login_required(None)
 def validate_user(token):
     """
@@ -156,7 +165,7 @@ def validate_user(token):
     return result
 
 
-@api.route('/getUsers')
+@users.route('/getUsers')
 @login_required()
 def get_users():
     """
