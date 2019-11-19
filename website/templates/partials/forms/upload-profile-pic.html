@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Upload{% endblock %}
+{% block content %}
+<div>
+    <form action="/api/photos/add-new-profile-pic" method="post" enctype="multipart/form-data">
+        File: <input type="file" name="file"><br>
+        <input type="submit" value="Upload">
+    </form>
+</div>
+{% endblock %}

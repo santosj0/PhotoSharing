@@ -35,6 +35,6 @@ class BaseConfig(object):
     MAIL_DEFAULT_SENDER = email_information[0]
 
     # Upload Section
-    UPLOAD_FOLDER = '/static/images'
+    UPLOAD_FOLDER = os.path.join('static', 'images')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024   # 16 megabytes

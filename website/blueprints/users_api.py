@@ -2,12 +2,12 @@ import website.functions.folders as fd
 import website.models as wm
 import os
 from website import db, bcrypt
-from website.blueprints.decorators import login_required, html_escape_values
+from website.blueprints.decorators import login_required, remove_html_tags
 from website.functions.email import send_mail
 from smtplib import SMTPException
 import website.functions.tokens as fd_token
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
-from flask import jsonify, Blueprint, request, session
+from flask import jsonify, Blueprint, session
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -17,12 +17,13 @@ users = Blueprint('users', __name__)
 
 @users.route('/login', methods=['POST'])
 @login_required(None)
-@html_escape_values
+@remove_html_tags
 def login_user(**kwargs):
     """
     Logs the user to allow access to restricted pages
     :param kwargs: 'request_get' is a dictionary of html safe parameters
     :return: Status of login
+    TODO: Check to also make sure that the user is verified
     """
     # Retrieve Form Data
     params = kwargs['request_get']
@@ -50,15 +51,15 @@ def login_user(**kwargs):
 
 
 @users.route('/logout')
-@login_required()
+@login_required(True)
 def logout_user():
     """
     Removes a user from the session
     :return: Result of whether or not the user was able to be logged out
     """
     if session.get('logged_in'):
-        for key in session.key():
-            session.pop(key)
+        session.pop('username')
+        session.pop('logged_in')
         result = 'Logged Out'
     else:
         result = 'Unable to log out the user'
@@ -68,7 +69,7 @@ def logout_user():
 
 @users.route('/register', methods=['POST'])
 @login_required(None)
-@html_escape_values
+@remove_html_tags
 def insert_user(**kwargs):
     """
     Inserts a new user into the database
@@ -80,7 +81,7 @@ def insert_user(**kwargs):
     username = params['username']
     password = bcrypt.generate_password_hash(params['password']).decode('utf-8')
     email = params['email']
-    profile_pic = params['profilepic']
+    profile_pic = params['profile_pic']
 
     # Establish connection to the database
     connection = db.engine.raw_connection()
@@ -109,7 +110,7 @@ def insert_user(**kwargs):
         result = send_mail('PhotoSharing - Please activate your account',
                            email,
                            html='/partials/emails/activation.html',
-                           links={'confirmation_token': 'http://localhost:5000/api/confirm_user/' + token})
+                           links={'confirmation_token': 'http://localhost:5000/api/users/confirm_user/' + token})
 
         if result == 0:
             raise SMTPException("Email not valid")
@@ -166,7 +167,7 @@ def validate_user(token):
 
 
 @users.route('/getUsers')
-@login_required()
+@login_required(True)
 def get_users():
     """
     Example for getting all the users

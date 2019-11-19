@@ -4,6 +4,9 @@ venv
 # Testing file
 test.py
 
+# User Images
+website/static/images/users
+
 # Login file
 login.txt
 
