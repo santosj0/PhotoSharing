@@ -29,3 +29,21 @@ class UserLogin(BASE):
 class UserLoginSchema(ma.ModelSchema):
     class Meta:
         model = UserLogin
+
+
+# Photos with Tags
+class TaggedPhotos(BASE):
+    __tablename__ = "photos_with_tags"
+
+    photo_id = db.Column('photo_id', db.Integer, nullable=False, primary_key=True)
+    picture_name = db.Column('picture_name', db.String(45), nullable=False)
+    description = db.Column('description', db.String(255), nullable=False)
+    upload_date = db.Column('upload_date', db.DATETIME, nullable=False)
+    upload_path = db.Column('path', db.String(255), nullable=False)
+    uploader = db.Column('uploader', db.String(45), nullable=False)
+    tags = db.Column('tags', db.String)
+
+
+class TaggedPhotosSchema(ma.ModelSchema):
+    class Meta:
+        model = TaggedPhotos

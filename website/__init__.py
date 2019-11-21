@@ -18,6 +18,11 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
 
+# Error Handling
+from website import errors as e
+app.register_error_handler(404, e.page_not_found)
+app.register_error_handler(500, e.internal_error)
+
 # Import Blueprints
 from website.blueprints.routes import routes
 from website.blueprints.users_api import users
@@ -27,7 +32,6 @@ from website.blueprints.photos_api import photos
 app.register_blueprint(routes)
 app.register_blueprint(users, url_prefix="/api/users")
 app.register_blueprint(photos, url_prefix="/api/photos")
-
 
 if __name__ == "__main__":
     app.run()

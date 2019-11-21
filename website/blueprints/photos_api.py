@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, session
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from website.blueprints.decorators import login_required, check_file_type, html_escape_values
+from website.blueprints.decorators import login_required, check_file_type, html_escape_values, uploader_only
 from website import app, db
 
 # Set up photos blueprint
@@ -11,14 +11,14 @@ photos = Blueprint('photos', __name__)
 
 
 @photos.route('/add-new-picture', methods=['POST'])
-@login_required(True)
+@login_required
 @check_file_type('file')
 @html_escape_values
 def add_new_picture(**kwargs):
     """
-
-    :param kwargs:
-    :return:
+    Adds a new user's uploaded photo to their folder and to the database
+    :param kwargs: kwargs['request_get'] is a dictionary of html safe parameters
+    :return: A Json response with whether or not this function succeeded
     """
     # Get variables
     params = kwargs['request_get']
@@ -67,7 +67,7 @@ def add_new_picture(**kwargs):
 
 
 @photos.route('/add-new-profile-pic', methods=['POST'])
-@login_required(True)
+@login_required
 @check_file_type('file')
 def add_new_profile_pic():
     """
@@ -117,6 +117,35 @@ def add_new_profile_pic():
     return jsonify({'result': result})
 
 
-@photos.route('/get-photos')
-def get_photos(**kwargs):
-    return jsonify({'stuff': kwargs['stuff'], 'GET': kwargs['request_get']})
+@photos.route('/add-tag-to-photo', methods=["POST"])
+@login_required
+@uploader_only("photo_id")
+@html_escape_values
+def add_tag_to_photo(**kwargs):
+    """
+    Adds a tag to the specified photo that the user uploaded themselves. Limit of 5 tags per photo and only unique tags only.
+    :param kwargs: kwargs['request_get'] is a dictionary of html safe parameters
+    :return: A Json response with whether or not this function succeeded
+    """
+    # Get variables
+    params = kwargs['request_get']
+    pid = params['photo_id']
+    tname = params['tag_name']
+
+    # Establish connection to the database
+    connection = db.engine.raw_connection()
+    try:
+        # Adds image to database
+        with connection.cursor() as cursor:
+            cursor.callproc("App_Photos_AddTagToPhoto", [pid, tname])
+            result = cursor.fetchone()[0]
+
+            # Finalizes the insertion
+            connection.commit()
+    except (SQLAlchemyError, Exception) as e:
+        connection.rollback()
+        result = "Type" + str(type(e)) + str(e)
+    finally:
+        connection.close()
+
+    return jsonify({'result': result})

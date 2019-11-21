@@ -2,7 +2,7 @@ import website.functions.folders as fd
 import website.models as wm
 import os
 from website import db, bcrypt
-from website.blueprints.decorators import login_required, remove_html_tags
+from website.blueprints.decorators import login_required, remove_html_tags, not_logged
 from website.functions.email import send_mail
 from smtplib import SMTPException
 import website.functions.tokens as fd_token
@@ -16,7 +16,7 @@ users = Blueprint('users', __name__)
 
 
 @users.route('/login', methods=['POST'])
-@login_required(None)
+@not_logged
 @remove_html_tags
 def login_user(**kwargs):
     """
@@ -34,16 +34,20 @@ def login_user(**kwargs):
     user_login = wm.UserLogin
 
     # Determine if the user exists
-    password2 = user_login.query.with_entities(user_login.password).filter_by(username=login_name).first()
+    user = user_login.query.with_entities(user_login.password, user_login.is_verified).filter_by(username=login_name).first()
+    output = wm.UserLoginSchema().dump(user)
 
     # Ends the session with the database
     db.session.close()
 
     # Makes sure that the user exists and that the password matches
-    if password2 and bcrypt.check_password_hash(password2[0], password):
-        session['logged_in'] = True
-        session['username'] = login_name
-        result = 'Logged in'
+    if user:
+        if bcrypt.check_password_hash(output['password'], password) and output['is_verified'] is True:
+            session['logged_in'] = True
+            session['username'] = login_name
+            result = 'Logged in'
+        elif output['is_verified'] is False:
+            result = "User not verified"
     else:
         result = 'Username or Password does not match'
 
@@ -51,7 +55,7 @@ def login_user(**kwargs):
 
 
 @users.route('/logout')
-@login_required(True)
+@login_required
 def logout_user():
     """
     Removes a user from the session
@@ -68,7 +72,7 @@ def logout_user():
 
 
 @users.route('/register', methods=['POST'])
-@login_required(None)
+@not_logged
 @remove_html_tags
 def insert_user(**kwargs):
     """
@@ -135,7 +139,7 @@ def insert_user(**kwargs):
 
 
 @users.route('/confirm_user/<token>')
-@login_required(None)
+@not_logged
 def validate_user(token):
     """
     Validates the user
@@ -167,7 +171,7 @@ def validate_user(token):
 
 
 @users.route('/getUsers')
-@login_required(True)
+@login_required
 def get_users():
     """
     Example for getting all the users
@@ -179,3 +183,21 @@ def get_users():
     db.session.close()
 
     return jsonify({'Users': output})
+
+
+@users.route('/get/<username>')
+@login_required
+def get_one_user(username):
+    # Get user login
+    ul = wm.UserLogin
+
+    user = ul.query.with_entities(ul.username, ul.password, ul.is_verified).filter_by(username=username).first()
+    us = wm.UserLoginSchema()
+    output = us.dump(user)
+    # print(output)
+    db.session.close()
+
+    if user:
+        return jsonify({'username': output})
+    else:
+        return jsonify({'result': 'user does not exist'})

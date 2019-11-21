@@ -1,37 +1,43 @@
 from flask import Blueprint, render_template
-from website.blueprints.decorators import login_required
+from website.blueprints.decorators import login_required, not_logged
 
 routes = Blueprint('routes', __name__)
 
 
-# Homepage redirect
+# Homepage
 @routes.route('/')
 def index():
     return "<h1>Hello world!</h1>"
 
 
 @routes.route('/login')
-@login_required(None)
+@not_logged
 def login():
     return render_template('/partials/forms/login.html')
 
 
 @routes.route('/register')
-@login_required(None)
+@not_logged
 def register():
     return render_template('/partials/forms/registration.html')
 
 
 @routes.route('/upload')
-@login_required(True)
+@login_required
 def upload():
     return render_template('/partials/forms/upload.html')
 
 
 @routes.route('/upload-profile-picture')
-@login_required(True)
+@login_required
 def upload_prof_pic():
     return render_template('/partials/forms/upload-profile-pic.html')
+
+
+@routes.route('/add-tag-to-photo')
+@login_required
+def add_tag_route():
+    return render_template('/partials/forms/add-tag.html')
 
 
 @routes.route('/activate')

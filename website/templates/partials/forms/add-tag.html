@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Add Tag to Photo{% endblock %}
+{% block content %}
+<div>
+    <form action="/api/photos/add-tag-to-photo" method="post">
+        Photo id:<br>
+        <input type="number" name="photo_id"><br>
+        Tag Name:<br>
+        <input type="text" name="tag_name"><br>
+        <input type="submit" value="Add Tag">
+    </form>
+</div>
+{% endblock %}
