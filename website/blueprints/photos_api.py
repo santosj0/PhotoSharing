@@ -149,3 +149,38 @@ def add_tag_to_photo(**kwargs):
         connection.close()
 
     return jsonify({'result': result})
+
+
+@photos.route('/add-comment-to-photo', methods=['POST'])
+@login_required
+@html_escape_values
+def add_comment_photo(**kwargs):
+    """
+    Adds a comment to a specified photo
+    :param kwargs: kwargs['request_get'] is a dictionary of html safe parameters
+    :return: A Json response with whether or not this function succeeded
+    """
+
+    # Get the variables
+    params = kwargs['request_get']
+    pid = params['photo_id']
+    comment = params['comment']
+    user = session['username']
+
+    # Establish connection to the database
+    connection = db.engine.raw_connection()
+    try:
+        # Add the comment to the database
+        with connection.cursor() as cursor:
+            cursor.callproc("App_Users_CommentPhoto", [user, comment, pid])
+            result = cursor.fetchone()[0]
+
+        # Finalizze the insertion
+        connection.commit()
+    except (SQLAlchemyError, Exception) as e:
+        connection.rollback()
+        result = "Type" + str(type(e)) + str(e)
+    finally:
+        connection.close()
+
+    return jsonify({'result': result})

@@ -2,10 +2,11 @@ import website.functions.folders as fd
 import website.models as wm
 import os
 from website import db, bcrypt
-from website.blueprints.decorators import login_required, remove_html_tags, not_logged
+from website.blueprints.decorators import login_required, not_logged, validate_eaddress, validate_text_numbers, \
+    make_request_get, validate_number_range
 from website.functions.email import send_mail
 from smtplib import SMTPException
-import website.functions.tokens as fd_token
+import website.functions.tokens as f_token
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
 from flask import jsonify, Blueprint, session
 from sqlalchemy.exc import SQLAlchemyError
@@ -17,7 +18,8 @@ users = Blueprint('users', __name__)
 
 @users.route('/login', methods=['POST'])
 @not_logged
-@remove_html_tags
+@make_request_get
+@validate_text_numbers('login_name', 'Invalid Username or Password')
 def login_user(**kwargs):
     """
     Logs the user to allow access to restricted pages
@@ -73,7 +75,10 @@ def logout_user():
 
 @users.route('/register', methods=['POST'])
 @not_logged
-@remove_html_tags
+@make_request_get
+@validate_text_numbers('username', message="Invalid Username")
+@validate_eaddress('email')
+@validate_number_range('profile_pic', start=1, end=8, message="Invalid Profile Picture")
 def insert_user(**kwargs):
     """
     Inserts a new user into the database
@@ -108,7 +113,7 @@ def insert_user(**kwargs):
 
         # Serializes/Generates the token
         # Suppose to use email, but since email is not unique, we use username
-        token = fd_token.generate_confirmation_token(username)
+        token = f_token.generate_token(username)
 
         # Sends the mail
         result = send_mail('PhotoSharing - Please activate your account',
@@ -150,7 +155,7 @@ def validate_user(token):
     connection = db.engine.raw_connection()
     try:
         # Update Users Verification
-        username = fd_token.confirm_token(token, expiration=86400) # Token lasts for 1 day
+        username = f_token.validate_token(token, expiration=86400)  # Token lasts for 1 day
         with connection.cursor() as cursor:
             cursor.callproc("App_Users_UpdateVerification", [username])
             result = cursor.fetchone()[0]
@@ -170,6 +175,9 @@ def validate_user(token):
     return result
 
 
+"""
+EXAMPLE SECTION FOR FURTHER REFERENCE
+"""
 @users.route('/getUsers')
 @login_required
 def get_users():

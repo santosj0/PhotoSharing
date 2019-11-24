@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Add Comment to Photo{% endblock %}
+{% block content %}
+<div>
+    <form action="/api/photos/add-comment-to-photo" method="post">
+        Photo id:<br>
+        <input type="number" name="photo_id"><br>
+        Comment:<br>
+        <textarea row="4" cols="40" name="comment"></textarea><br>
+        <input type="submit" value="Add Comment">
+    </form>
+</div>
+{% endblock %}

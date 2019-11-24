@@ -40,6 +40,12 @@ def add_tag_route():
     return render_template('/partials/forms/add-tag.html')
 
 
+@routes.route('/add-comment-to-photo')
+@login_required
+def add_comment_route():
+    return render_template('/partials/forms/comment-photo.html')
+
+
 @routes.route('/activate')
 def world():
     return render_template('/partials/emails/activation.html')
