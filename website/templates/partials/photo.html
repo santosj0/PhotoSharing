@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+    <h3>Title</h3>
+    <img src="{{ url_for('static', filename='images/3.jpg') }}" alt="Pretty Girl" width="400" height="600">
+    <div>
+        <p>Uploader</p>  <p>Date</p>
+    </div>
+    <div>
+        <textarea rows="4" cols="50">
+Your Description will go here.
+        </textarea>
+    </div>
+ </div>
+
+
+ <p><a href="/about.html">Add a comment</a></p>
+
+
+
+
+{% endblock content %}
