@@ -46,6 +46,12 @@ def add_comment_route():
     return render_template('/partials/forms/comment-photo.html')
 
 
+@routes.route('/forgot-password')
+@not_logged
+def forgot_password():
+    return render_template('/partials/forms/forgot-password.html')
+
+
 @routes.route('/activate')
 def world():
     return render_template('/partials/emails/activation.html')

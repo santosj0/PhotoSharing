@@ -1,14 +1,14 @@
 import website.functions.folders as fd
 import website.models as wm
+import website.functions.tokens as f_token
 import os
 from website import db, bcrypt
 from website.blueprints.decorators import login_required, not_logged, validate_eaddress, validate_text_numbers, \
     make_request_get, validate_number_range
 from website.functions.email import send_mail
 from smtplib import SMTPException
-import website.functions.tokens as f_token
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
-from flask import jsonify, Blueprint, session
+from flask import jsonify, Blueprint, session, render_template, request
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -119,14 +119,14 @@ def insert_user(**kwargs):
         result = send_mail('PhotoSharing - Please activate your account',
                            email,
                            html='/partials/emails/activation.html',
-                           links={'confirmation_token': 'http://localhost:5000/api/users/confirm_user/' + token})
+                           links={'confirmation_token': 'http://localhost:5000/api/users/confirm-user/' + token})
 
         if result == 0:
             raise SMTPException("Email not valid")
 
         # Add everything to the database
         connection.commit()
-        result = 1
+        result = "User is registered"
 
     # Rollback in case anything happens
     except (FileExistsError, FileNotFoundError, SQLAlchemyError, SMTPException) as e:
@@ -143,7 +143,7 @@ def insert_user(**kwargs):
     return jsonify({'result': result})
 
 
-@users.route('/confirm_user/<token>')
+@users.route('/confirm-user/<token>')
 @not_logged
 def validate_user(token):
     """
@@ -173,6 +173,96 @@ def validate_user(token):
         connection.close()
 
     return result
+
+
+@users.route('/send-password-reset', methods=['POST'])
+@not_logged
+@make_request_get
+@validate_text_numbers('username')
+def send_password_reset(**kwargs):
+    # Grab the variables
+    params = kwargs['request_get']
+    uname = params['username']
+
+    # UserLogin View
+    user_login = wm.UserLogin
+
+    # Determine if the user exists
+    user = user_login.query.with_entities(user_login.email).filter_by(username=uname).first()
+    output = wm.UserLoginSchema().dump(user)
+
+    # Ends the session with the database
+    db.session.close()
+
+    if user:
+        try:
+            # Serializes/Generates the token
+            token = f_token.generate_token(uname)
+
+            # Sends the mail
+            result = send_mail('PhotoSharing - Password Reset',
+                               output['email'],
+                               html='/partials/emails/password-change.html',
+                               links={'reset_token': 'http://localhost:5000/api/users/reset-password/' + token})
+
+            if result == 0:
+                raise SMTPException("Email not valid")
+
+            result = "Email sent"
+
+        except (SMTPException, Exception) as e:
+            result = e
+
+    else:
+        result = 'Username does not exist'
+
+    return jsonify({'result': result})
+
+
+@users.route('/reset-password/<token>', methods=['GET', 'POST'])
+@not_logged
+@make_request_get
+def validate_reset_password(token, **kwargs):
+    # Verifies that the token is valid
+    uname = None
+    try:
+        uname = f_token.validate_token(token, expiration=36000)  # Token lasts for 10 minutes
+        result = "Valid"
+    except SignatureExpired:
+        result = "Token is expired"
+    except BadTimeSignature:
+        result = "Token provided is not valid"
+
+    if request.method == "GET":
+        if result is not "Valid" or uname is None:
+            return jsonify({'result': result})
+        else:
+            return render_template('/partials/forms/reset-password.html')
+
+    elif request.method == "POST":
+        if result is not "Valid" or uname is None:
+            return jsonify({'result': result})
+        else:
+            params = kwargs['request_get']
+            password = bcrypt.generate_password_hash(params['password']).decode('utf-8')
+
+            # Establish connection to the database
+            connection = db.engine.raw_connection()
+            try:
+                with connection.cursor() as cursor:
+                    cursor.callproc("App_Users_ResetPassword", [uname, password])
+                    result = cursor.fetchone()[0]
+
+                # Add everything to the database
+                connection.commit()
+            except (SQLAlchemyError, Exception) as e:
+                connection.rollback()
+                result = e
+
+            return jsonify({'result': result})
+
+    else:
+        return jsonify({'result': 'GET and POST only methods'})
 
 
 """
