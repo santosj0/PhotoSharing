@@ -226,7 +226,7 @@ def validate_reset_password(token, **kwargs):
     # Verifies that the token is valid
     uname = None
     try:
-        uname = f_token.validate_token(token, expiration=600)  # Token lasts for 10 minutes
+        uname = f_token.validate_token(token, expiration=600)  # Token lasts for 5 minutes
         result = "Valid"
     except SignatureExpired:
         result = "Token is expired"
