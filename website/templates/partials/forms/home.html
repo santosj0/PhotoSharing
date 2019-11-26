@@ -13,7 +13,7 @@
             <!-- Generate cards based on list -->
             {% for photo in photos %}
                 <!-- Image Cards -->
-                <div class="col-md-4">
+                <div class="col-md" style="min-width: 230px">
                     <div class="card mb-4 box-shadow">
                         <img class="card-img-top" alt="{{ photo['picture_name'] }}" style="height: 225px; width: 100%; display: block;" src="{{ photo['upload_path'] }}">
                         <div class="card-body">

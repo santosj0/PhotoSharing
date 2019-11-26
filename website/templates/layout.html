@@ -10,6 +10,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    {% block css %}{% endblock %}
 
     <!-- Fav icon -->
     <link rel="icon" href="{{ url_for('static', filename='images/defaults/default01.png') }}" type="image/gif" sizes="16x16">
@@ -38,14 +39,17 @@
 
                 <!-- Navbar content -->
                 <div class="collapse navbar-collapse" id="navbarToggle">
-                    <div class="navbar-nav mr-auto">
 
-                        <!-- Navbar Left Side -->
-                        <a class="nav-item nav-link" href="/">Home</a>
+                    <!-- Navbar Left Side -->
+                    <div class="navbar-nav mr-auto">
+                        <a class="nav-item nav-link d-none d-md-block" href="/">Home</a>
+                        <div class="d-md-none m-1"></div>
                     </div>
 
                         <!-- Navbar Right Side -->
                     <div class="navbar-nav">
+
+                        <!-- Search bar -->
                         <form action="" method="post">
                             <div class="input-group">
                                 <input class="form-control" type="text" placeholder="Start Searching Here...">

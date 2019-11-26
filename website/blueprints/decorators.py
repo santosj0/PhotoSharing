@@ -6,6 +6,40 @@ from functools import wraps
 from flask import Markup as mark
 
 
+def keyword_exist(params):
+    """
+    Checks to make sure that the parameters sent exist based on provided list
+    :param params: List of that names for the parameters
+    :return: The desired route or an error response
+    """
+    def decorated(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Retrieves the data
+            if kwargs['request_get']:
+                plist = kwargs['request_get']
+            else:
+                if request.method == "GET":
+                    plist = request.args.to_dict()
+                elif request.method == "POST":
+                    if request.get_json():
+                        plist = request.get_json()
+                    else:
+                        plist = request.form.to_dict()
+                else:
+                    return jsonify({'result': "Allowed methods: GET, POST"})
+
+            # Checks to make sure key exists
+            for param in params:
+                exist = plist.get(param)
+                if not exist:
+                    return jsonify({'result': param + " does not exist"})
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorated
+
+
 def validate_number_range(param, start=1, end=10, message="Invalid Parameter"):
     """
     Makes sure that the parameter is a number in the specified range

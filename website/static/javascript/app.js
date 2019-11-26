@@ -5,26 +5,34 @@ $('#message_close').on('click', function(){
 
 /* Function to display error messages */
 function dangerMessage(status, body) {
-    if($('#message').hasClass("alert-success")){
-        $('#message').removeClass("alert-success");
-    }
-
+    $('#message').removeClass("alert-success").removeClass("alert-warning");
     $('#message').addClass("alert-danger");
     $('#message_status').text(status + " ");
     $('#message_body').text(body);
     $('#message').show();
 }
 
+/* Server issue */
+function serverError(err) {
+    dangerMessage(err, "There has been an issue sending the form, please try again later.");
+}
+
 /* Function to display good messages */
 function successMessage(status, body) {
-    if($('#message').hasClass("alert-danger")){
-        $('#message').removeClass("alert-danger");
-    }
-
+    $('#message').removeClass("alert-danger").removeClass("alert-warning");
     $('#message').addClass("alert-success");
     $('#message_status').text(status + " ");
     $("#Message_body").text(body);
     $("#message").show();
+}
+
+/* Function to display warning messages */
+function warningMessage(status, body) {
+    $('#message').removeClass("alert-danger").removeClass("alert-success");
+    $('#message').addClass("alert-warning");
+    $('#message_status').text(status + " ");
+    $('#message_body').text(body);
+    $('#message').show();
 }
 
 /* Logout Handling */
@@ -53,4 +61,14 @@ function toggleForm() {
     for(var i = 0; i < arguments.length; i++) {
         $(arguments[i]).prop('disabled', !$(arguments[i]).is(':disabled'));
     }
+}
+
+/* Makes the letter of the first string into an uppercase */
+function upperFirst(word) {
+    return word.replace(/^\w/, c => c.toUpperCase());
+}
+
+/* Form item does not exist */
+function formExist(param) {
+    return param + " does not exist";
 }

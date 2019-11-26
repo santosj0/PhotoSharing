@@ -1,4 +1,5 @@
-from website.models import TaggedPhotos as tp, TaggedPhotosSchema as tps
+from website.models import TaggedPhotos as tp, TaggedPhotosSchema as tps, DefaultProfPics as dpp, \
+    DefaultProfPicsSchema as dpps
 from flask import Blueprint, render_template
 from website.blueprints.decorators import login_required, not_logged
 from website import db
@@ -28,7 +29,13 @@ def login():
 @routes.route('/register')
 @not_logged
 def register():
-    return render_template('/partials/bad_forms/registration.html')
+    prof_pic = dpp.query \
+        .with_entities(dpp.photo_id, dpp.upload_path) \
+        .all()
+    prof_schema = dpps(many=True)
+    output = prof_schema.dump(prof_pic)
+    db.session.close()
+    return render_template('/partials/forms/register.html', photos=output)
 
 
 @routes.route('/upload')

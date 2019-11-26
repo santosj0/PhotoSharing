@@ -18,13 +18,20 @@ $(document).ready(function(){
 
                 // Unsuccessful Login result
                 if(result['result'] != "Logged in"){
-                    dangerMessage("Login Error.", result['result']);
+                    if(result['result'] == formExist("login_name")){
+                        m_body = "Username cannot be empty.";
+                    }else if(result['result'] == formExist("password")){
+                        m_body = "Password cannot be empty.";
+                    }else {
+                        m_body = upperFirst(result['result']);
+                    }
+                    dangerMessage("Login Error.", m_body);
 
                     // Enables form
                     toggleForm("#login_button");
                 }
 
-                // User is successfully logged so either goes
+                // User has successfully logged so either goes
                 // to previous page or the homepage if previous
                 // page does not exist
                 else{
@@ -44,9 +51,14 @@ $(document).ready(function(){
             },
             error: function(xhr, resp, text) {
                 console.log(xhr, resp, text);
+                serverError(text);
+
+                // Enables form
+                toggleForm("#login_button");
             }
         });
 
+        // Prevents html form submission
         return false;
     });
 });

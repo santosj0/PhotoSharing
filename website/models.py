@@ -47,3 +47,16 @@ class TaggedPhotos(BASE):
 class TaggedPhotosSchema(ma.ModelSchema):
     class Meta:
         model = TaggedPhotos
+
+
+# Default Profile Pictures
+class DefaultProfPics(BASE):
+    __tablename__ = "default_profile_pics"
+
+    photo_id = db.Column('photo_id', db.Integer, nullable=False, primary_key=True)
+    upload_path = db.Column('file_path', db.String(255), nullable=False)
+
+
+class DefaultProfPicsSchema(ma.ModelSchema):
+    class Meta:
+        model = DefaultProfPics

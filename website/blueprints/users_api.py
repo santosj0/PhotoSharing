@@ -4,7 +4,7 @@ import website.functions.tokens as f_token
 import os
 from website import db, bcrypt
 from website.blueprints.decorators import login_required, not_logged, validate_eaddress, validate_text_numbers, \
-    make_request_get, validate_number_range
+    make_request_get, validate_number_range, keyword_exist
 from website.functions.email import send_mail
 from smtplib import SMTPException
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
@@ -19,6 +19,7 @@ users = Blueprint('users', __name__)
 @users.route('/login', methods=['POST'])
 @not_logged
 @make_request_get
+@keyword_exist(['login_name', 'password'])
 @validate_text_numbers('login_name', 'Username can only be numbers, letters, hypens, and/or underscores')
 def login_user(**kwargs):
     """
@@ -76,6 +77,7 @@ def logout_user():
 @users.route('/register', methods=['POST'])
 @not_logged
 @make_request_get
+@keyword_exist(['username', 'password', 'email', 'profile_pic'])
 @validate_text_numbers('username', message="Invalid Username")
 @validate_eaddress('email')
 @validate_number_range('profile_pic', start=1, end=8, message="Invalid Profile Picture")
@@ -101,7 +103,7 @@ def insert_user(**kwargs):
             result = cursor.fetchone()[0]
 
         if result == 0:
-            raise SQLAlchemyError("Username or Password Exists")
+            raise SQLAlchemyError("Username already exists")
 
         # Generate the folders
         # Make function to make sure that folders don't exist
@@ -131,7 +133,7 @@ def insert_user(**kwargs):
     # Rollback in case anything happens
     except (FileExistsError, FileNotFoundError, SQLAlchemyError, SMTPException) as e:
         # Store the error
-        result = e
+        result = str(e)
 
         # Remove the information from the database
         connection.rollback()
