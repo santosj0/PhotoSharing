@@ -237,7 +237,7 @@ def validate_reset_password(token, **kwargs):
         if result is not "Valid" or uname is None:
             return jsonify({'result': result})
         else:
-            return render_template('/partials/forms/reset-password.html')
+            return render_template('/partials/bad_forms/reset-password.html')
 
     elif request.method == "POST":
         if result is not "Valid" or uname is None:
