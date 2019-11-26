@@ -3,8 +3,12 @@ console.log(document.referrer);
 
 /* Ajax call to log the user in */
 $(document).ready(function(){
-    // Submit on button mouse-up
+
+    // Submit on button click
     $("#login_button").on('click', function(){
+        // Disables form
+        toggleForm("#login_button");
+
         $.ajax({
             url: "/api/users/login",
             type: "POST",
@@ -14,18 +18,26 @@ $(document).ready(function(){
 
                 // Unsuccessful Login result
                 if(result['result'] != "Logged in"){
-                    console.log(result);
+                    dangerMessage("Login Error.", result['result']);
+
+                    // Enables form
+                    toggleForm("#login_button");
                 }
 
                 // User is successfully logged so either goes
                 // to previous page or the homepage if previous
                 // page does not exist
                 else{
-                    if(document.referrer){
-                        window.location = document.referrer;
-                    }else{
-                        window.location = "/";
-                    }
+                    successMessage("Logged In.", "You have successfully logged in. Redirecting you now...");
+
+                    setTimeout(function(){
+                        if(document.referrer){
+                            window.location = document.referrer;
+                        }else{
+                            window.location = "/";
+                        }
+                    }, 2000);
+
                 }
 
 
