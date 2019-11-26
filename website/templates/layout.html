@@ -1,14 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %}</title>
+     <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Custom Scripts -->
-    {% block scripts %}{% endblock %}
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    <!-- Fav icon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/defaults/default01.png') }}" type="image/gif" sizes="16x16">
+
+    <!-- Sets the title based on title variable passed by route -->
+    {% if title %}
+        <title>Photo Sharing - {{ title }}</title>
+    {% else %}
+        <title>Photo Sharing</title>
+    {% endif %}
 
 </head>
 <body>
-    {% block content %}{% endblock %}
+
+    <!-- Header/NavBar -->
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+            <div class="container">
+                <!-- Brand -->
+                <a class="navbar-brand mr-4" href="/">Photo Sharing</a>
+
+                <!-- Collapsible Button for smaller screens -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar content -->
+                <div class="collapse navbar-collapse" id="navbarToggle">
+                    <div class="navbar-nav mr-auto">
+
+                        <!-- Navbar Left Side -->
+                        <a class="nav-item nav-link" href="/">Home</a>
+                    </div>
+
+                        <!-- Navbar Right Side -->
+                    <div class="navbar-nav">
+                        <form action="" method="post">
+                            <div class="input-group">
+                                <input class="form-control" type="text" placeholder="Start Searching Here...">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Changes based on user log in -->
+                        {% if not session.logged_in %}
+                            <a class="nav-item nav-link" href="/login">Login</a>
+                            <a class="nav-item nav-link" href="/register">Register</a>
+                        {% else %}
+                            <a class="nav-item nav-link" href="">Account</a>
+                            <a class="nav-item nav-link" href="">Logout</a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <!--^This code will display flashed messages on all pages-->
+                {% with messages = get_flashed_messages(with_categories=true)%}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Displays partial templates -->
+                {% block content %}{% endblock %}
+
+            </div>
+
+            <!-- May implement later when kinks are worked out -->
+            <div class="col-md-4 d-none">
+                <div class="content-section">
+                    <h4>What's Trending!</h4>
+                    <ul class="list-group text-muted">
+                        <li class="list-group-item list-group-item-light">Latest Posts</li>
+                        <li class="list-group-item list-group-item-light">Hottest Posts</li>
+                        <li class="list-group-item list-group-item-light">Hottest Category</li>
+                        <li class="list-group-item list-group-item-light">User with most Posts</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    {% block jscripts %}{% endblock %}
+
 </body>
 </html>

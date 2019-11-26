@@ -1,5 +1,7 @@
+from website.models import TaggedPhotos as tp, TaggedPhotosSchema as tps
 from flask import Blueprint, render_template
 from website.blueprints.decorators import login_required, not_logged
+from website import db
 
 routes = Blueprint('routes', __name__)
 
@@ -7,13 +9,20 @@ routes = Blueprint('routes', __name__)
 # Homepage
 @routes.route('/')
 def index():
-    return "<h1>Hello world!</h1>"
+    tagged_photos = tp.query\
+        .with_entities(tp.photo_id, tp.picture_name, tp.upload_path, tp.uploader, tp.description)\
+        .order_by(tp.upload_date.desc())\
+        .all()
+    photo_schema = tps(many=True)
+    output = photo_schema.dump(tagged_photos)
+    db.session.close()
+    return render_template('/partials/forms/home.html', title="Home", photos=output)
 
 
 @routes.route('/login')
 @not_logged
 def login():
-    return render_template('/partials/bad_forms/login.html')
+    return render_template('/partials/forms/login.html')
 
 
 @routes.route('/register')

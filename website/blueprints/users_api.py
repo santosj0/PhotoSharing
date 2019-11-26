@@ -19,7 +19,7 @@ users = Blueprint('users', __name__)
 @users.route('/login', methods=['POST'])
 @not_logged
 @make_request_get
-@validate_text_numbers('login_name', 'Invalid Username or Password')
+@validate_text_numbers('login_name', 'Username can only be numbers, letters, hypens, and/or underscores')
 def login_user(**kwargs):
     """
     Logs the user to allow access to restricted pages
@@ -48,8 +48,8 @@ def login_user(**kwargs):
             session['logged_in'] = True
             session['username'] = login_name
             result = 'Logged in'
-        elif output['is_verified'] is False:
-            result = "User not verified"
+        else:
+            result = "Username or Password does not match or User not verified"
     else:
         result = 'Username or Password does not match'
 
