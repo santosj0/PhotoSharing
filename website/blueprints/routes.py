@@ -23,7 +23,7 @@ def index():
 @routes.route('/login')
 @not_logged
 def login():
-    return render_template('/partials/forms/login.html')
+    return render_template('/partials/forms/login.html', title="Login")
 
 
 @routes.route('/register')
@@ -35,13 +35,13 @@ def register():
     prof_schema = dpps(many=True)
     output = prof_schema.dump(prof_pic)
     db.session.close()
-    return render_template('/partials/forms/register.html', photos=output)
+    return render_template('/partials/forms/register.html', title="Register", photos=output)
 
 
 @routes.route('/upload')
 @login_required
 def upload():
-    return render_template('/partials/bad_forms/upload.html')
+    return render_template('/partials/forms/upload.html', title="Upload Photo")
 
 
 @routes.route('/upload-profile-picture')

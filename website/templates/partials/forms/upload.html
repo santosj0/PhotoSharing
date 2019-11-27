@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block jscripts %}
+<script src="{{ url_for('static', filename='javascript/upload.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row flex-column-reverse flex-md-row justify-content-center">
+
+        <div class="content-section col-md-5 mr-md-2 d-flex justify-content-center">
+            <div class="bg-dark align-self-center">
+                <img id="preview_image" class="img-fluid mx-auto d-block" src="https://via.placeholder.com/500x600?text=Preview+Image" alt="Place holder">
+            </div>
+        </div>
+
+        <div class="content-section col-md-5">
+            <form id="upload_form" action="" method="POST" enctype="multipart/form-data">
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Upload Photo</legend>
+
+                    <!-- Title -->
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" name="title" id="title">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="dcript">Description</label>
+                        <textarea class="form-control" rows="4" name="dcript" id="dcript"></textarea>
+                    </div>
+
+                    <!-- Upload File -->
+                    <div class="form-group">
+                        <label for="file">Select image</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="file" id="file">
+                            <label class="custom-file-label" for="file">Select image...</label>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <input id="upload_button" type="button" value="Upload">
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

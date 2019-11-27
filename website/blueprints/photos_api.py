@@ -3,7 +3,8 @@ from flask import Blueprint, request, jsonify, session
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from website.blueprints.decorators import login_required, check_file_type, html_escape_values, uploader_only
+from website.blueprints.decorators import login_required, check_file_type, html_escape_values, uploader_only, \
+    keyword_exist
 from website import app, db
 
 # Set up photos blueprint
@@ -14,6 +15,7 @@ photos = Blueprint('photos', __name__)
 @login_required
 @check_file_type('file')
 @html_escape_values
+@keyword_exist(['title', 'dcript'])
 def add_new_picture(**kwargs):
     """
     Adds a new user's uploaded photo to their folder and to the database

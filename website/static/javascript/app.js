@@ -22,7 +22,7 @@ function successMessage(status, body) {
     $('#message').removeClass("alert-danger").removeClass("alert-warning");
     $('#message').addClass("alert-success");
     $('#message_status').text(status + " ");
-    $("#Message_body").text(body);
+    $("#message_body").text(body);
     $("#message").show();
 }
 

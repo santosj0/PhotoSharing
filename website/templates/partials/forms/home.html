@@ -6,26 +6,26 @@
 {% block content %}
 
 <div class="container-fluid">
-    <h1>Welcome to PhotoSharing</h1>
-    <div class="container">
-        <div class="row">
+    <h1 class="text-center">Welcome to PhotoSharing</h1>
+    <div class="container-fluid">
 
-            <!-- Generate cards based on list -->
-            {% for photo in photos %}
-                <!-- Image Cards -->
-                <div class="col-md" style="min-width: 230px">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top" alt="{{ photo['picture_name'] }}" style="height: 225px; width: 100%; display: block;" src="{{ photo['upload_path'] }}">
-                        <div class="card-body">
-                            <p class="card-text font-weight-bold">Uploader: {{ photo['uploader'] }}</p>
-                            <p class="card-text text-truncate">{{ photo['description'] }}</p>
-                            <a href="" class="stretched-link"></a>
+            <div class="row justify-content-center">
+                <!-- Generate cards based on list -->
+                {% for photo in photos %}
+                    <!-- Image Cards {{ photo['photo_id'] }} -->
+                    <div class="col-md-auto d-flex justify-content-center">
+                        <div class="card mb-4 box-shadow" style="width: 15rem">
+                            <img class="card-img-top" alt="{{ photo['picture_name'] }}" style="height: 225px; width: 100%; display: block;" src="{{ photo['upload_path'] }}">
+                            <div class="card-body">
+                                <p class="card-text font-weight-bold">Uploader: {{ photo['uploader'] }}</p>
+                                <p class="card-text text-truncate">{{ photo['description'] }}</p>
+                                <a href="" class="stretched-link"></a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
 
-        </div>
     </div>
 </div>
 
