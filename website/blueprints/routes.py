@@ -1,19 +1,19 @@
 from website.models import TaggedPhotos as tp, TaggedPhotosSchema as tps, DefaultProfPics as dpp, \
     DefaultProfPicsSchema as dpps
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, abort
 from website.blueprints.decorators import login_required, not_logged
 from website import db
+from datetime import datetime
 
 routes = Blueprint('routes', __name__)
 
 
-# Homepage
 @routes.route('/')
 def index():
     tagged_photos = tp.query\
         .with_entities(tp.photo_id, tp.picture_name, tp.upload_path, tp.uploader, tp.description)\
         .order_by(tp.upload_date.desc())\
-        .all()
+        .limit(20)
     photo_schema = tps(many=True)
     output = photo_schema.dump(tagged_photos)
     db.session.close()
@@ -42,6 +42,20 @@ def register():
 @login_required
 def upload():
     return render_template('/partials/forms/upload.html', title="Upload Photo")
+
+
+@routes.route('/photo/<pid>')
+def display_photo(pid):
+    photo = tp.query.filter_by(photo_id=pid).first()
+    ps = tps()
+    output = ps.dump(photo)
+    db.session.close()
+    if photo:
+        date = datetime.strptime(output['upload_date'], "%Y-%m-%dT%H:%M:%S")
+        output['upload_date'] = date.strftime("%m/%d/%Y %H:%M:%S")
+        return render_template('/partials/forms/photo.html', title=output['picture_name'], photo=output)
+    else:
+        return abort(404)
 
 
 @routes.route('/upload-profile-picture')
