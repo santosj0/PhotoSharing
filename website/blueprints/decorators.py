@@ -195,6 +195,56 @@ def not_logged(f):
     return decorated_function
 
 
+def uploader_commenter_only(param):
+    """
+    Allows only the uploader of the specified photo or the commenter of the comment allowed to the route
+    :param param: Name of the parameter that holds the comment_id
+    :return: The desired route, the failure results, or a redirect to login
+    """
+
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Logged in users only
+            if session.get('logged_in'):
+                # Get comment_id based on param
+                if request.method == "GET":
+                    cid = request.get(param)
+                elif request.method == "POST":
+                    if request.get_json():
+                        cid = request.get_json().get(param)
+                    else:
+                        cid = request.form[param]
+                else:
+                    return jsonify({'result': "Allowed methods: GET, POST"})
+
+                # Retrieved the logged in user's username
+                username = session['username']
+
+                # Get the commenter based on the comment_id
+                cp = wm.CommentedPhotos
+                comment = cp.query.with_entities(cp.uploader, cp.commenter).filter_by(comment_id=cid).first()
+                output = wm.CommentedPhotosSchema().dump(comment)
+
+                # Ends the session with the database
+                db.session.close()
+
+                # Check to make sure comment exist and user is uploader or commenter
+                if comment:
+                    if output['uploader'] == username or output['commenter'] == username:
+                        return f(*args, **kwargs)
+                    else:
+                        return jsonify({'result': 'Neither commenter or uploader'})
+                else:
+                    return jsonify({'result': 'Comment does not exist'})
+
+            else:
+                return redirect(url_for('routes.login'))
+
+        return decorated_function
+    return decorator
+
+
 def uploader_only(param):
     """
     Allows only the uploader of the specified photo allowed to the route

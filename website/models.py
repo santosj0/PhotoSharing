@@ -60,3 +60,24 @@ class DefaultProfPics(BASE):
 class DefaultProfPicsSchema(ma.ModelSchema):
     class Meta:
         model = DefaultProfPics
+
+
+# Photos with Comments
+class CommentedPhotos(BASE):
+    __tablename__ = "photos_with_comments"
+
+    photo_id = db.Column('photo_id', db.Integer, nullable=False, primary_key=True)
+    picture_name = db.Column('pic_name', db.String(45), nullable=False)
+    description = db.Column('description', db.String(255), nullable=False)
+    upload_date = db.Column('upload_date', db.DATETIME, nullable=False)
+    file_path = db.Column('file_path', db.String(255), nullable=False)
+    uploader = db.Column('uploader', db.String(45), nullable=False)
+    comment_id = db.Column('comment_id', db.Integer, nullable=False)
+    commenter = db.Column('commenter', db.String(45), nullable=False)
+    comment_text = db.Column('comment_text', db.String(255), nullable=False)
+    comment_date = db.Column('comment_date', db.DATETIME, nullable=False)
+
+
+class CommentedPhotosSchema(ma.ModelSchema):
+    class Meta:
+        model = CommentedPhotos

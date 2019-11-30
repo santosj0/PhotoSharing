@@ -4,8 +4,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from website.blueprints.decorators import login_required, check_file_type, html_escape_values, uploader_only, \
-    keyword_exist
+    keyword_exist, uploader_commenter_only, make_request_get
 from website import app, db
+from website.models import CommentedPhotos as cp, CommentedPhotosSchema as cps
 
 # Set up photos blueprint
 photos = Blueprint('photos', __name__)
@@ -186,3 +187,35 @@ def add_comment_photo(**kwargs):
         connection.close()
 
     return jsonify({'result': result})
+
+
+@photos.route('/comments/<pid>')
+def get_photo_comments(pid):
+    # Retrieve username
+    username = None
+    if session.get('logged_in'):
+        username = session['username']
+
+    # Retrieve comments
+    comments = cp.query.with_entities(cp.comment_text, cp.comment_date, cp.commenter, cp.uploader, cp.comment_id)\
+        .filter_by(photo_id=pid).all()
+    output = cps(many=True).dump(comments)
+    db.session.close()
+
+    # Modify datetime
+    if comments:
+        for comm in output:
+            date = datetime.strptime(comm['comment_date'], "%Y-%m-%dT%H:%M:%S")
+            comm['comment_date'] = date.strftime("%m/%d/%Y %H:%M:%S")
+    else:
+        return jsonify({'result': 'No comments'})
+
+    return jsonify({'result': output, 'user': username if username else 'Not logged in'})
+
+
+@photos.route('/remove-comment', methods=['POST'])
+@make_request_get
+@uploader_commenter_only("comment_id")
+def remove_comment(**kwargs):
+    print(kwargs['request_get'])
+    return jsonify({'result': 'Page exists'})

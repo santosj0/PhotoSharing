@@ -1,19 +1,62 @@
 {% extends "layout.html" %}
+
+{% block jscripts %}
+<script>
+    var pid = {{ photo['photo_id'] }};
+</script>
+
+<script src="{{ url_for('static', filename='javascript/photo.js') }}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="col-md-auto d-flex justify-content-center">
     <div class="content-section">
         <h1>{{ photo['picture_name'] | safe }}</h1>
-        <hr>
         <div class="d-flex justify-content-center">
             <img class="mb-4 img-fluid" alt="{{ photo['picture_name'] }}" src="/{{ photo['upload_path'] }}">
         </div>
-        <div class="">
-            <div class="row">
-                <p class="font-weight-bold col-md text-md-left">Uploader: {{ photo['uploader'] | safe }}</p>
-                <p class="font-weight-bold col-md text-md-right">Upload Date: {{ photo['upload_date'] }}</p>
+        <div class="media">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="mr-2" href="">{{ photo['uploader'] | safe }}</a>
+                    <small class="text-muted">{{ photo['upload_date'] }}</small>
+                </div>
+                <p class="article-content">{{ photo['description'] | safe }}</p>
             </div>
-            <p class="">{{ photo['description'] | safe }}</p>
         </div>
     </div>
+</div>
+
+<!-- Comment Section -->
+<div class="col-md-auto">
+    <div class="row align-items-center">
+        <h1 class="mr-2">Comments</h1>
+        <a href="#comment_form">Add New Comment</a>
+    </div>
+    <div id="comment_section" class="my-2">
+        <div id="comment_message" class="content_section">
+            <p>Loading comments...</p>
+        </div>
+    </div>
+
+    <!-- Add comment -->
+    <form id="comment_form">
+
+        <!-- Photo_id -->
+        <input type="hidden" id="cpid" name="photo_id" value="{{ photo['photo_id'] }}">
+
+        <!-- Comment -->
+        <div class="form-group shadow">
+            <textarea class="form-control" rows="4" name="comment" id="comment"
+                      placeholder="Write your comment here..."></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <input id="comment_button" type="button" value="Comment">
+        </div>
+
+    </form>
+
 </div>
 {% endblock content %}
