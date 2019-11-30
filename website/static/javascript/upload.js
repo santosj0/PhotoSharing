@@ -42,7 +42,7 @@ $(document).ready(function(){
         var data = new FormData(form);
 
         // Disables form
-        toggleForm('#upload_form');
+        toggleForm('#upload_button');
 
         $.ajax({
             url: "/api/photos/add-new-picture",
@@ -84,7 +84,7 @@ $(document).ready(function(){
             },
             complete: function(res) {
                 // Enables Form
-                toggleForm('#upload_form');
+                toggleForm('#upload_button');
                 window.scrollTo(0, 0);
             }
         });

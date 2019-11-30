@@ -50,7 +50,7 @@
                     <div class="navbar-nav">
 
                         <!-- Search bar -->
-                        <form action="" method="post">
+                        <form class="d-none" action="" method="post">
                             <div class="input-group">
                                 <input class="form-control" type="text" placeholder="Start Searching Here...">
                                 <div class="input-group-append">
@@ -64,7 +64,16 @@
                             <a class="nav-item nav-link" href="/login">Login</a>
                             <a class="nav-item nav-link" href="/register">Register</a>
                         {% else %}
-                            <a class="nav-item nav-link" href="">Account</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                   data-toggle="dropdown">
+                                    {{ session.username }}
+                                </a>
+                                <div class="dropdown-menu bg-steel">
+                                    <a class="dropdown-item" href="">Account</a>
+                                    <a class="dropdown-item" href="">Album</a>
+                                </div>
+                            </li>
                             <a class="nav-item nav-link" href="/upload">Upload</a>
                             <a class="nav-item nav-link" href="" id="logout">Logout</a>
                         {% endif %}

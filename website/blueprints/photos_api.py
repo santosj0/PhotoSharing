@@ -157,6 +157,7 @@ def add_tag_to_photo(**kwargs):
 @photos.route('/add-comment-to-photo', methods=['POST'])
 @login_required
 @html_escape_values
+@keyword_exist(['photo_id', 'comment'])
 def add_comment_photo(**kwargs):
     """
     Adds a comment to a specified photo
@@ -217,5 +218,25 @@ def get_photo_comments(pid):
 @make_request_get
 @uploader_commenter_only("comment_id")
 def remove_comment(**kwargs):
-    print(kwargs['request_get'])
-    return jsonify({'result': 'Page exists'})
+    # Get the variables
+    params = kwargs['request_get']
+    cid = params['comment_id']
+    user = session['username']
+
+    # Establish connection to the database
+    connection = db.engine.raw_connection()
+    try:
+        # Remove the comment from the database
+        with connection.cursor() as cursor:
+            cursor.callproc("App_Users_DeleteComment", [user, cid])
+            result = cursor.fetchone()[0]
+
+        # Finalizze the Deletion
+        connection.commit()
+    except (SQLAlchemyError, Exception) as e:
+        connection.rollback()
+        result = "Type" + str(type(e)) + str(e)
+    finally:
+        connection.close()
+
+    return jsonify({'result': result})
