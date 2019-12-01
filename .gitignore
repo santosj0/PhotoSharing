@@ -1,8 +1,8 @@
 # Virtual Environment
 venv
 
-# Testing file
-test.py
+# Testing file/folder
+test
 
 # User Images
 website/static/images/users

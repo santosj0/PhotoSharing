@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+<!-- Scripts goes here -->
+{% block jscripts %}
+<script src="{{ url_for('static', filename='javascript/album.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <h1 class="text-center">{{ uname }}'s Uploaded Photos</h1>
+    <div class="container-fluid">
+
+            <div class="row justify-content-center">
+
+                {% if photos %}
+
+                    <!-- Generate cards based on list -->
+                    {% for photo in photos %}
+                        <!-- Image Cards {{ photo['photo_id'] }} -->
+                        <div id="card{{ photo['photo_id'] }}" class="col-md-auto d-flex justify-content-center" data-card="{{ photo['photo_id'] }}">
+                            <div class="card mb-4 box-shadow" style="width: 15rem">
+                                <img class="card-img-top" alt="{{ photo['picture_name'] }}" style="height: 225px; width: 100%; display: block;" src="../{{ photo['upload_path'] }}">
+                                <div class="card-body">
+                                    <p class="card-text text-truncate">{{ photo['description'] }}</p>
+                                    {% if not session.username == uname %}
+                                        <a href="/photo/{{ photo['photo_id'] }}" class="stretched-link"></a>
+                                    {% else %}
+                                        <a class="float-left btn bg-steel color-shift" href="/photo/{{ photo['photo_id'] }}">View</a>
+                                        <button id="remove{{ photo['photo_id'] }}" class="float-right btn bg-steel color-shift"
+                                                data-pid="{{ photo['photo_id'] }}" data-title="{{ photo['picture_name'] }}">
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                {% else %}
+                    <div class="content-section">
+                        {% if not session.username == uname %}
+                            <div class="">Seems {{ uname }} has not uploaded any photos yet...</div>
+                        {% else %}
+                            <div class="">Seems you have not uploaded any photos yet... How about <a href="/upload">uploading</a> a photo?</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+    </div>
+</div>
+
+{% endblock %}

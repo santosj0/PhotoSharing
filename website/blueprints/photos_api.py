@@ -12,6 +12,7 @@ from website.models import CommentedPhotos as cp, CommentedPhotosSchema as cps
 photos = Blueprint('photos', __name__)
 
 
+""" Photo Section """
 @photos.route('/add-new-picture', methods=['POST'])
 @login_required
 @check_file_type('file')
@@ -69,6 +70,48 @@ def add_new_picture(**kwargs):
     return jsonify({'result': result})
 
 
+@photos.route('/remove-photo', methods=['POST'])
+@uploader_only("photo_id")
+@make_request_get
+def remove_photo(**kwargs):
+    param = kwargs['request_get']
+    pid = param['photo_id']
+    user = session['username']
+
+    # Establish connection to the database
+    connection = db.engine.raw_connection()
+    try:
+        # Remove the photo from the database
+        with connection.cursor() as cursor:
+            cursor.callproc("App_Photos_DeletePhoto", [user, pid])
+            result = cursor.fetchone()[0]
+
+        # Result is not the file path
+        if result in ["User does not exist", "Photo does not exist/User is not uploader"]:
+            raise Exception(result)
+
+        # Sets the path to picture to have os separator
+        result = result.replace("/", os.sep)
+
+        # Remove photo for directory
+        path = os.path.join(os.getcwd(), result)
+        os.remove(path)
+
+        # Set the result
+        result = "Photo has been removed"
+
+        # Finalize the Deletion
+        connection.commit()
+    except (FileNotFoundError, SQLAlchemyError, Exception) as e:
+        connection.rollback()
+        result = "Type" + str(type(e)) + str(e)
+    finally:
+        connection.close()
+
+    return jsonify({'result': result})
+
+
+""" Profile Picture Section """
 @photos.route('/add-new-profile-pic', methods=['POST'])
 @login_required
 @check_file_type('file')
@@ -120,6 +163,7 @@ def add_new_profile_pic():
     return jsonify({'result': result})
 
 
+""" Tag Section """
 @photos.route('/add-tag-to-photo', methods=["POST"])
 @login_required
 @uploader_only("photo_id")
@@ -154,6 +198,7 @@ def add_tag_to_photo(**kwargs):
     return jsonify({'result': result})
 
 
+""" Comment Section """
 @photos.route('/add-comment-to-photo', methods=['POST'])
 @login_required
 @html_escape_values

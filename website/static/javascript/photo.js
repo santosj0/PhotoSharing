@@ -1,6 +1,3 @@
-/* Page working */
-console.log("Hello!")
-
 function updateComments(comments, user) {
 
     // Remove anything inside comment section
@@ -10,7 +7,6 @@ function updateComments(comments, user) {
     for(comment of comments){
         // Storing the comment_id
         cid = comment['comment_id'];
-        console.log(cid);
 
         html = "<article class='media content-section shadow'>" +
                 "<div class='media-body'>" +
@@ -67,6 +63,7 @@ function updateComments(comments, user) {
 
                     },
                     error: function(xhr, resp, text) {
+                        // Display Error
                         console.log(xhr, resp, text);
                         serverError(text);
 
@@ -121,8 +118,6 @@ function getComments(pid){
 
 /* Ajax call to get the comments */
 $(document).ready(function(){
-
-    console.log(pid);
 
     // Adds comment to page immediately
     getComments(pid);

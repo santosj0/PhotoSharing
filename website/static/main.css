@@ -87,3 +87,15 @@ a.article-title:hover {
     background-color: inherit;
     color: #ffffff;
 }
+
+.color-shift {
+    color: #cbd5db;
+}
+
+.color-shift:hover {
+    color: #ffffff;
+}
+
+.color-shift:active {
+    font-weight: 500;
+}

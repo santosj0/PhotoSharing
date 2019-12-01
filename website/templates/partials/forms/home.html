@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 <!-- Scripts goes here -->
-{% block scripts %}{% endblock %}
+{% block jscripts %}{% endblock %}
 
 {% block content %}
 
@@ -17,7 +17,6 @@
                         <div class="card mb-4 box-shadow" style="width: 15rem">
                             <img class="card-img-top" alt="{{ photo['picture_name'] }}" style="height: 225px; width: 100%; display: block;" src="{{ photo['upload_path'] }}">
                             <div class="card-body">
-                                <p class="card-text font-weight-bold">Uploader: {{ photo['uploader'] }}</p>
                                 <p class="card-text text-truncate">{{ photo['description'] }}</p>
                                 <a href="/photo/{{ photo['photo_id'] }}" class="stretched-link"></a>
                             </div>

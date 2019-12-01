@@ -18,7 +18,7 @@
         <div class="media">
             <div class="media-body">
                 <div class="article-metadata">
-                    <a class="mr-2" href="">{{ photo['uploader'] | safe }}</a>
+                    <a class="mr-2" href="/{{ photo['uploader'] }}/album">{{ photo['uploader'] | safe }}</a>
                     <small class="text-muted">{{ photo['upload_date'] }}</small>
                 </div>
                 <p class="article-content">{{ photo['description'] | safe }}</p>
