@@ -11,7 +11,13 @@ function updateComments(comments, user) {
         html = "<article class='media content-section shadow'>" +
                 "<div class='media-body'>" +
                     "<div class='article-metadata'>" +
-                        "<a class='mr-2' href='#'>" + comment['commenter'] + "</a>" +
+                        "<img width='64' class='img-fluid mr-2' alt='Profile Picture' src='../" + comment['commenter_profile_pic'] + "'";
+
+                        if(comment['pixelated']) {
+                            html += "style='image-rendering: pixelated'";
+                        }
+
+                        html += "><a class='mr-2' href='/" + comment['commenter'] + "/album'>" + comment['commenter'] + "</a>" +
                         "<small class='text-muted'>" + comment['comment_date'] + "</small>";
 
         // Add remove button if user is uploader or commenter

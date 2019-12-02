@@ -62,7 +62,7 @@ def display_photo(pid):
 @routes.route('/<username>/album')
 def user_album(username):
     # Determines if user exists
-    user = wm.VerifiedUsers.query.with_entities(wm.VerifiedUsers.username).filter_by(username=username).first()
+    user = wm.UserInformation.query.with_entities(wm.UserInformation.username).filter_by(username=username).first()
 
     # Generate the title for the webpage
     title = username + "'s Album"
@@ -75,6 +75,24 @@ def user_album(username):
         return render_template('/partials/forms/album.html', title=title, photos=output, uname=username)
     else:
         abort(404)
+
+
+@routes.route('/account')
+@login_required
+def user_account():
+    """
+    TODO: Finish the accounts page
+    :return:
+    """
+    # Retrieve user information
+    uname = session['username']
+    user = wm.UserInformation.query.filter_by(username=uname).first()
+    output = wm.UserInformationSchema().dump(user)
+
+    # Page title
+    title = uname + "'s Account"
+
+    return render_template('/partials/forms/account.html', title=title, user=output)
 
 
 """ Bad form section """

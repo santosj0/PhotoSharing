@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block jscripts %}
+<!--<script src="{{ url_for('static', filename='javascript/account.js') }}"></script>-->
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center d-block text-break">
+        <h1>{{ user['username'] }}'s Account Page</h1>
+        <div class="content-section">
+            <h1>User Information</h1>
+            <hr>
+            <div class="text-left">
+                <p>Username: {{ user['username'] }}</p>
+                <p>Email: {{ user['email'] }}</p>
+            </div>
+        </div>
+        <div class="content-section">
+            <h1>Account Options</h1>
+            <hr>
+            <div class="text-left">
+                <p>Upload Profile Picture</p>
+                <p>Update Email</p>
+                <p>Update Password</p>
+                <p>Delete Account</p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -7,18 +7,21 @@ BASE = db.Model
 # Never use Tables / Views Only
 
 
-# Verified Users
-class VerifiedUsers(BASE):
-    __tablename__ = 'verified_users'
+# Verified Users with profile pictures
+class UserInformation(BASE):
+    __tablename__ = 'user_profile_pictures'
 
     user_id = db.Column('user_id', db.Integer, nullable=False, primary_key=True)
     username = db.Column('username', db.String(45), nullable=False)
     email = db.Column('email', db.String(45), nullable=False)
+    photo_id = db.Column('photo_id', db.Integer, nullable=False)
+    file_path = db.Column('file_path', db.String(255), nullable=False)
+    profile_pic_id = db.Column('profile_pic_id', db.Integer, nullable=False)
 
 
-class VerifiedUsersSchema(ma.ModelSchema):
+class UserInformationSchema(ma.ModelSchema):
     class Meta:
-        model = VerifiedUsers
+        model = UserInformation
 
 
 # Login Register
@@ -73,13 +76,13 @@ class DefaultProfPicsSchema(ma.ModelSchema):
 class CommentedPhotos(BASE):
     __tablename__ = "photos_with_comments"
 
-    photo_id = db.Column('photo_id', db.Integer, nullable=False, primary_key=True)
+    photo_id = db.Column('photo_id', db.Integer, nullable=False)
     picture_name = db.Column('pic_name', db.String(45), nullable=False)
     description = db.Column('description', db.String(255), nullable=False)
     upload_date = db.Column('upload_date', db.DATETIME, nullable=False)
     file_path = db.Column('file_path', db.String(255), nullable=False)
     uploader = db.Column('uploader', db.String(45), nullable=False)
-    comment_id = db.Column('comment_id', db.Integer, nullable=False)
+    comment_id = db.Column('comment_id', db.Integer, nullable=False, primary_key=True)
     commenter = db.Column('commenter', db.String(45), nullable=False)
     comment_text = db.Column('comment_text', db.String(255), nullable=False)
     comment_date = db.Column('comment_date', db.DATETIME, nullable=False)
@@ -88,3 +91,21 @@ class CommentedPhotos(BASE):
 class CommentedPhotosSchema(ma.ModelSchema):
     class Meta:
         model = CommentedPhotos
+
+
+# Comments with Profile Pictures
+class ProfilePicturedComments(BASE):
+    __tablename__ = "comments_with_profile_picture"
+
+    photo_id = db.Column('photo_id', db.Integer, nullable=False)
+    comment_id = db.Column('comment_id', db.Integer, nullable=False, primary_key=True)
+    uploader = db.Column('uploader', db.String(45), nullable=False)
+    commenter = db.Column('commenter', db.String(45), nullable=False)
+    comment_text = db.Column('comment_text', db.String(255), nullable=False)
+    comment_date = db.Column('comment_date', db.DATETIME, nullable=False)
+    commenter_profile_pic = db.Column('commenter_profile_pic', db.String(255), nullable=False)
+
+
+class ProfilePicturedCommentsSchema(ma.ModelSchema):
+    class Meta:
+        model = ProfilePicturedComments
