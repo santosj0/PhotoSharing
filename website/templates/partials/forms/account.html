@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block jscripts %}
-<!--<script src="{{ url_for('static', filename='javascript/account.js') }}"></script>-->
+<script src="{{ url_for('static', filename='javascript/account.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
             <h1>User Information</h1>
             <hr>
             <div class="text-left">
-                <img class="mx-auto d-block {{ 'pixel' if user['pixel'] }}" style="height: 225px" src="{{ user['file_path'] }}">
+                <img class="mx-auto d-block {{ 'pixel' if user['pixel'] }}" style="width: 225px; height: 225px" src="{{ user['file_path'] }}">
                 <p>Username: {{ user['username'] }}</p>
                 <p>Email: {{ user['email'] }}</p>
             </div>
@@ -23,7 +23,7 @@
                 <a href="/upload-profile-picture" class="d-block">Change Profile Picture</a>
                 <a href="/update-email" class="d-block">Update Email</a>
                 <a href="/update-password" class="d-block">Update Password</a>
-                <a href="" class="d-block">Delete Account</a>
+                <button class="btn btn-link border-0 p-0 d-block" id="delete-user">Delete Account</button>
             </div>
         </div>
     </div>

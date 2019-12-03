@@ -330,3 +330,45 @@ def validate_reset_password(token, **kwargs):
 
     else:
         return jsonify({'result': 'GET and POST only methods'})
+
+
+@users.route('/delete-user', methods=['POST'])
+@login_required
+@make_request_get
+@keyword_exist(['confirmation'])
+def remove_user(**kwargs):
+    # variables
+    con = kwargs['request_get']['confirmation']
+    uname = session['username']
+    path = os.path.join(os.getcwd(), 'static', 'images', 'users')
+
+    # Valid confirmation
+    if con == "true":
+        # Establish connection to the database
+        connection = db.engine.raw_connection()
+        try:
+            # Remove user from database
+            with connection.cursor() as cursor:
+                cursor.callproc("App_Users_DeleteUser", [uname])
+
+            # Remove user's folder
+            fd.delete_user_folders(path, uname)
+
+            # Remove the user's session
+            session.pop('username')
+            session.pop('logged_in')
+
+            # Everything worked
+            result = "User has been removed"
+
+            # Add everything to the database
+            connection.commit()
+        except (FileNotFoundError, SQLAlchemyError, Exception) as e:
+            connection.rollback()
+            result = "Type" + str(type(e)) + str(e)
+        finally:
+            connection.close()
+    else:
+        result = "Invalid confirmation"
+
+    return jsonify({'result': result})

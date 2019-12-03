@@ -1,6 +1,3 @@
-console.log("Hello");
-console.log(current)
-
 $(document).ready(function(){
 
     // Name of file appear on select

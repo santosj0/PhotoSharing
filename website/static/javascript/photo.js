@@ -10,9 +10,14 @@ function updateComments(comments, user) {
 
         html = "<article class='media content-section shadow'>" +
                 "<div class='media-body'>" +
-                    "<div class='article-metadata'>" +
-                        "<a class='mr-2' href='/" + comment['commenter'] + "/album'>" + comment['commenter'] + "</a>" +
-                        "<small class='text-muted'>" + comment['comment_date'] + "</small>";
+                    "<div class='article-metadata'>";
+
+                    if(comment['commenter'] == '[deleted]'){
+                        html += "<span class='mr-2'>" + comment['commenter'] + "</span>";
+                    }else{
+                        html += "<a class='m-0 mr-2' href='/" + comment['commenter'] + "/album'>" + comment['commenter'] + "</a>";
+                    }
+                         html += "<small class='text-muted'>" + comment['comment_date'] + "</small>";
 
         // Add remove button if user is uploader or commenter
         if(user == comment['commenter'] || user == comment['uploader']){
