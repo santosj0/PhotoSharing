@@ -99,3 +99,7 @@ a.article-title:hover {
 .color-shift:active {
     font-weight: 500;
 }
+
+.pixel {
+    image-rendering: pixelated;
+}

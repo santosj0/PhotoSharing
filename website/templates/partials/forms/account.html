@@ -11,6 +11,7 @@
             <h1>User Information</h1>
             <hr>
             <div class="text-left">
+                <img class="mx-auto d-block {{ 'pixel' if user['pixel'] }}" style="height: 225px" src="{{ user['file_path'] }}">
                 <p>Username: {{ user['username'] }}</p>
                 <p>Email: {{ user['email'] }}</p>
             </div>
@@ -19,10 +20,10 @@
             <h1>Account Options</h1>
             <hr>
             <div class="text-left">
-                <p>Upload Profile Picture</p>
-                <p>Update Email</p>
-                <p>Update Password</p>
-                <p>Delete Account</p>
+                <a href="/upload-profile-picture" class="d-block">Change Profile Picture</a>
+                <a href="/update-email" class="d-block">Update Email</a>
+                <a href="/update-password" class="d-block">Update Password</a>
+                <a href="" class="d-block">Delete Account</a>
             </div>
         </div>
     </div>

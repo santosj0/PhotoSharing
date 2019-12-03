@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block css %}
+<style>
+    input[type=radio] {
+        display: none;
+    }
+
+    img:hover {
+        cursor: pointer;
+        opacity: 0.6;
+    }
+
+    input[type=radio]:checked + label > img {
+        border: 5px solid blue;
+    }
+
+</style>
+{% endblock %}
+
+{% block jscripts %}
+<script src="{{ url_for('static', filename='javascript/upload-profile-pic.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div id="up_prof_pic_valid" class="content-section">
+            <form id="up_prof_pic_form" method="post" action="">
+
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Change Profile Picture</legend>
+
+                    <!-- Profile Pic -->
+                    <div class="form-group">
+                        <label class="form-control-label">Previously Uploaded Profile Picture</label>
+                        <div class="row">
+                            {% for photo in photos %}
+                                <input id="photo_form_{{ photo['profile_pic_id'] }}" type="radio" name="profile_pic" value="{{ photo['profile_pic_id'] }}">
+                                <label for="photo_form_{{ photo['profile_pic_id'] }}">
+                                    <img width="230" style="image-rendering: pixelated" class="img-thumbnail m-2 {{ 'pixel' if photo['pixel'] }}" src="{{ photo['file_path'] }}">
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Upload File -->
+                    <div class="form-group">
+                        <label for="file">New Profile Picture</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="file" id="file">
+                            <label class="custom-file-label" for="file">Select image...</label>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <input id="up_prof_pic_button" type="button" value="Register">
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock content %}

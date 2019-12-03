@@ -1,4 +1,5 @@
 import os
+import website.models as wm
 from flask import Blueprint, request, jsonify, session
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
@@ -6,7 +7,7 @@ from datetime import datetime
 from website.blueprints.decorators import login_required, check_file_type, html_escape_values, uploader_only, \
     keyword_exist, uploader_commenter_only, make_request_get
 from website import app, db
-from website.models import ProfilePicturedComments as ppc, ProfilePicturedCommentsSchema as ppcs
+
 
 # Set up photos blueprint
 photos = Blueprint('photos', __name__)
@@ -242,10 +243,13 @@ def get_photo_comments(pid):
     if session.get('logged_in'):
         username = session['username']
 
+    # photos_with_comments view
+    pwc = wm.CommentedPhotos
+
     # Retrieve comments
-    comments = ppc.query.with_entities(ppc.comment_text, ppc.comment_date, ppc.commenter, ppc.uploader, ppc.comment_id,
-                                       ppc.commenter_profile_pic).filter_by(photo_id=pid).all()
-    output = ppcs(many=True).dump(comments)
+    comments = pwc.query.with_entities(pwc.comment_text, pwc.comment_date, pwc.commenter, pwc.uploader, pwc.comment_id)\
+        .filter_by(photo_id=pid).all()
+    output = wm.CommentedPhotosSchema(many=True).dump(comments)
     db.session.close()
 
     if comments:
@@ -253,13 +257,6 @@ def get_photo_comments(pid):
             # Modify date time
             date = datetime.strptime(comm['comment_date'], "%Y-%m-%dT%H:%M:%S")
             comm['comment_date'] = date.strftime("%m/%d/%Y %H:%M:%S")
-
-            # Modify default profile pic
-            if comm['commenter_profile_pic'].split('/')[0] == '':
-                comm['commenter_profile_pic'] = 'static/images' + comm['commenter_profile_pic']
-                comm['pixelated'] = True
-            else:
-                comm['pixelated'] = False
     else:
         return jsonify({'result': 'No comments'})
 

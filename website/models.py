@@ -7,6 +7,23 @@ BASE = db.Model
 # Never use Tables / Views Only
 
 
+# Verifies Users with all profile pictures
+class AllProfilePictures(BASE):
+    __tablename__ = "all_profile_pictures"
+
+    user_id = db.Column('user_id', db.Integer, nullable=False)
+    username = db.Column('username', db.String(45), nullable=False)
+    email = db.Column('email', db.String(45), nullable=False)
+    photo_id = db.Column('photo_id', db.Integer, nullable=False)
+    file_path = db.Column('file_path', db.String(255), nullable=False)
+    profile_pic_id = db.Column('profile_pic_id', db.Integer, nullable=False, primary_key=True)
+
+
+class AllProfilePicturesSchema(ma.ModelSchema):
+    class Meta:
+        model = AllProfilePictures
+
+
 # Verified Users with profile pictures
 class UserInformation(BASE):
     __tablename__ = 'user_profile_pictures'

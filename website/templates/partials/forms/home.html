@@ -17,7 +17,7 @@
                         <div class="card mb-4 box-shadow" style="width: 15rem">
                             <img class="card-img-top" alt="{{ photo['picture_name'] }}" style="height: 225px; width: 100%; display: block;" src="{{ photo['upload_path'] }}">
                             <div class="card-body">
-                                <p class="card-text text-truncate">{{ photo['description'] }}</p>
+                                <p class="card-text text-truncate">{{ photo['description'] | safe}}</p>
                                 <a href="/photo/{{ photo['photo_id'] }}" class="stretched-link"></a>
                             </div>
                         </div>

@@ -80,14 +80,18 @@ def user_album(username):
 @routes.route('/account')
 @login_required
 def user_account():
-    """
-    TODO: Finish the accounts page
-    :return:
-    """
     # Retrieve user information
     uname = session['username']
     user = wm.UserInformation.query.filter_by(username=uname).first()
     output = wm.UserInformationSchema().dump(user)
+    db.session.close()
+
+    # Modify default image
+    if output['file_path'].split('/')[0]:
+        output['pixel'] = False
+    else:
+        output['file_path'] = 'static/images' + output['file_path']
+        output['pixel'] = True
 
     # Page title
     title = uname + "'s Account"
@@ -95,13 +99,30 @@ def user_account():
     return render_template('/partials/forms/account.html', title=title, user=output)
 
 
-""" Bad form section """
 @routes.route('/upload-profile-picture')
 @login_required
 def upload_prof_pic():
-    return render_template('/partials/bad_forms/upload-profile-pic.html')
+    # Set variables
+    uname = session['username']
+    ap = wm.AllProfilePictures
+
+    # Retrieve profile pictures
+    photos = ap.query.with_entities(ap.profile_pic_id, ap.file_path).filter_by(username=uname).all()
+    output = wm.AllProfilePicturesSchema(many=True).dump(photos)
+    db.session.close()
+
+    # Modify default image
+    for out in output:
+        if out['file_path'].split('/')[0]:
+            out['pixel'] = False
+        else:
+            out['file_path'] = 'static/images' + out['file_path']
+            out['pixel'] = True
+
+    return render_template('/partials/forms/upload-profile-pic.html', photos=output)
 
 
+""" Bad form section """
 @routes.route('/add-tag-to-photo')
 @login_required
 def add_tag_route():
