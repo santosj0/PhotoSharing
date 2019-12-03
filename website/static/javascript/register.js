@@ -15,13 +15,14 @@ $(document).ready(function(){
             dataType: "json",
             data: $('#register_form').serialize(),
             success: function(result) {
+                var res = result['result'];
 
                 // Unsuccessful Registration
-                if(result['result'] != "User is registered") {
-                    if(result['result'] == "Invalid Profile Picture" || result['result'] == formExist("profile_pic")) {
+                if(res != "User is registered") {
+                    if(res == "Invalid Profile Picture" || res == formExist("profile_pic")) {
                         m_body = "Please select a profile picture. It will highlight blue for the selected image.";
                     }else {
-                        m_body = upperFirst(result['result']);
+                        m_body = upperFirst(res);
                     }
                     dangerMessage("Registration Error.", m_body);
 

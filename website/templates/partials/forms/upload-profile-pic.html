@@ -24,28 +24,45 @@
 
 {% block content %}
     <div class="container">
-        <div id="up_prof_pic_valid" class="content-section">
-            <form id="up_prof_pic_form" method="post" action="">
+
+        <!-- Update Form -->
+        <div class="content-section">
+            <form id="update_prof_form" method="post" action="">
 
                 <fieldset class="form-group">
                     <legend class="border-bottom mb-4">Change Profile Picture</legend>
 
                     <!-- Profile Pic -->
                     <div class="form-group">
-                        <label class="form-control-label">Previously Uploaded Profile Picture</label>
                         <div class="row">
                             {% for photo in photos %}
-                                <input id="photo_form_{{ photo['profile_pic_id'] }}" type="radio" name="profile_pic" value="{{ photo['profile_pic_id'] }}">
+                                <input id="photo_form_{{ photo['profile_pic_id'] }}" type="radio" name="profile_pic" value="{{ photo['profile_pic_id'] }}" {{ 'checked' if photo['is_active'] }}>
                                 <label for="photo_form_{{ photo['profile_pic_id'] }}">
-                                    <img width="230" style="image-rendering: pixelated" class="img-thumbnail m-2 {{ 'pixel' if photo['pixel'] }}" src="{{ photo['file_path'] }}">
+                                    <img style="width: 225px; height: 225px;" class="img-thumbnail m-2 {{ 'pixel' if photo['pixel'] }}" src="{{ photo['file_path'] }}">
                                 </label>
                             {% endfor %}
                         </div>
                     </div>
 
+                </fieldset>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <input id="update_prof_button" type="button" value="Update">
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="content-section">
+            <form id="upload_prof_form" method="post" action="" enctype="multipart/form-data">
+                <fieldset class="form-ground">
+                    <legend class="border-bottom mb-4">Upload New Profile Picture</legend>
+
+
                     <!-- Upload File -->
                     <div class="form-group">
-                        <label for="file">New Profile Picture</label>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" name="file" id="file">
                             <label class="custom-file-label" for="file">Select image...</label>
@@ -56,10 +73,11 @@
 
                 <!-- Submit Button -->
                 <div class="form-group">
-                    <input id="up_prof_pic_button" type="button" value="Register">
+                    <input id="upload_prof_button" type="button" value="Upload">
                 </div>
 
             </form>
         </div>
+
     </div>
 {% endblock content %}

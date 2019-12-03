@@ -70,6 +70,7 @@ $(document).ready(function(){
                     dangerMessage("Upload Error.", m_body);
                 }
 
+                // Successful Upload
                 else {
                     successMessage("Photo Uploaded.", "Photo has been uploaded. You may now upload another.");
                     $('#upload_form').trigger("reset");
@@ -88,8 +89,6 @@ $(document).ready(function(){
                 window.scrollTo(0, 0);
             }
         });
-
-
 
         // Prevents html form submission
         return false;

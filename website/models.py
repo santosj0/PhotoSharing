@@ -17,6 +17,7 @@ class AllProfilePictures(BASE):
     photo_id = db.Column('photo_id', db.Integer, nullable=False)
     file_path = db.Column('file_path', db.String(255), nullable=False)
     profile_pic_id = db.Column('profile_pic_id', db.Integer, nullable=False, primary_key=True)
+    is_active = db.Column('is_active', db.Boolean, nullable=False)
 
 
 class AllProfilePicturesSchema(ma.ModelSchema):

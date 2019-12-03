@@ -46,7 +46,7 @@ def add_new_picture(**kwargs):
     connection = db.engine.raw_connection()
     try:
         # Upload image
-        file.save(os.path.join(path))
+        file.save(path)
 
         # Modify the current path to have '/' instead of '\'
         path2 = path.replace("\\", "/")
@@ -113,6 +113,34 @@ def remove_photo(**kwargs):
 
 
 """ Profile Picture Section """
+@photos.route('/update-profile-pic', methods=['POST'])
+@login_required
+@make_request_get
+@keyword_exist(['profile_pic'])
+def update_profile_pic(**kwargs):
+    param = kwargs['request_get']
+    prof_id = param['profile_pic']
+    user = session['username']
+
+    # Establish connection to database
+    connection = db.engine.raw_connection()
+    try:
+        # Update the new profile pic
+        with connection.cursor() as cursor:
+            cursor.callproc("App_Users_UpdateProfilePic", [user, prof_id])
+            result = cursor.fetchone()[0]
+
+            # Finalize the Deletion
+            connection.commit()
+    except (SQLAlchemyError, Exception) as e:
+        connection.rollback()
+        result = "Type" + str(type(e)) + str(e)
+    finally:
+        connection.close()
+
+    return jsonify({'result': result})
+
+
 @photos.route('/add-new-profile-pic', methods=['POST'])
 @login_required
 @check_file_type('file')

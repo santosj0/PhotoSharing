@@ -107,7 +107,7 @@ def upload_prof_pic():
     ap = wm.AllProfilePictures
 
     # Retrieve profile pictures
-    photos = ap.query.with_entities(ap.profile_pic_id, ap.file_path).filter_by(username=uname).all()
+    photos = ap.query.with_entities(ap.profile_pic_id, ap.file_path, ap.is_active).filter_by(username=uname).all()
     output = wm.AllProfilePicturesSchema(many=True).dump(photos)
     db.session.close()
 
