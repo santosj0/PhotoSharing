@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block jscripts %}
+<script src="{{ url_for('static', filename='javascript/update-email.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+
+        <!-- Update Form -->
+        <div class="content-section">
+            <form id="update_email_form" method="post" action="">
+
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Change Email</legend>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <input id="email" type="email" name="email" class="form-control form-control-lg">
+                    </div>
+
+                </fieldset>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <input id="update_email_button" type="button" value="Update">
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+{% endblock content %}

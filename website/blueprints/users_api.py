@@ -74,6 +74,34 @@ def logout_user():
     return jsonify({'result': result})
 
 
+@users.route('/update-email', methods=['POST'])
+@login_required
+@make_request_get
+@keyword_exist(['email'])
+@validate_eaddress('email')
+def update_email(**kwargs):
+    email = kwargs['request_get']['email']
+    uname = session['username']
+
+    # Establish connection to the database
+    connection = db.engine.raw_connection()
+    try:
+        # Add the user to the database
+        with connection.cursor() as cursor:
+            cursor.callproc("App_Users_UpdateEmail", [uname, email])
+            result = cursor.fetchone()[0]
+
+        # Add everything to the database
+        connection.commit()
+    except (SQLAlchemyError, Exception) as e:
+        connection.rollback()
+        result = "Type" + str(type(e)) + str(e)
+    finally:
+        connection.close()
+
+    return jsonify({'result': result})
+
+
 @users.route('/register', methods=['POST'])
 @not_logged
 @make_request_get
@@ -213,7 +241,7 @@ def send_password_reset(**kwargs):
             result = "Email sent"
 
         except (SMTPException, Exception) as e:
-            result = e
+            result = str(e)
 
     else:
         result = 'Username does not exist'
@@ -259,45 +287,9 @@ def validate_reset_password(token, **kwargs):
                 connection.commit()
             except (SQLAlchemyError, Exception) as e:
                 connection.rollback()
-                result = e
+                result = str(e)
 
             return jsonify({'result': result})
 
     else:
         return jsonify({'result': 'GET and POST only methods'})
-
-
-"""
-EXAMPLE SECTION FOR FURTHER REFERENCE
-"""
-@users.route('/getUsers')
-@login_required
-def get_users():
-    """
-    Example for getting all the users
-    :return: Json of the user information
-    """
-    users = wm.UserLogin.query.all()
-    users_schema = wm.UserLoginSchema(many=True)
-    output = users_schema.dump(users)
-    db.session.close()
-
-    return jsonify({'Users': output})
-
-
-@users.route('/get/<username>')
-@login_required
-def get_one_user(username):
-    # Get user login
-    ul = wm.UserLogin
-
-    user = ul.query.with_entities(ul.username, ul.password, ul.is_verified).filter_by(username=username).first()
-    us = wm.UserLoginSchema()
-    output = us.dump(user)
-    # print(output)
-    db.session.close()
-
-    if user:
-        return jsonify({'username': output})
-    else:
-        return jsonify({'result': 'user does not exist'})
