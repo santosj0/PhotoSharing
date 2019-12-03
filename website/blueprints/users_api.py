@@ -26,7 +26,6 @@ def login_user(**kwargs):
     Logs the user to allow access to restricted pages
     :param kwargs: 'request_get' is a dictionary of html safe parameters
     :return: Status of login
-    TODO: Check to also make sure that the user is verified
     """
     # Retrieve Form Data
     params = kwargs['request_get']
@@ -74,6 +73,44 @@ def logout_user():
     return jsonify({'result': result})
 
 
+@users.route('/update-password', methods=['POST'])
+@login_required
+@make_request_get
+@keyword_exist(['old_password', 'new_password'])
+def update_password(**kwargs):
+    # Variables
+    uname = session['username']
+    old_pass = kwargs['request_get']['old_password']
+    new_pass = bcrypt.generate_password_hash(kwargs['request_get']['new_password']).decode('utf-8')
+
+    # Retrieve old password
+    user = wm.UserLogin.query.with_entities(wm.UserLogin.password).filter_by(username=uname).first()
+    output = wm.UserLoginSchema().dump(user)
+    db.session.close()
+
+    # Verify that old password is correct
+    if bcrypt.check_password_hash(output['password'], old_pass):
+        # Establish connection to the database
+        connection = db.engine.raw_connection()
+        try:
+            # Update with new password
+            with connection.cursor() as cursor:
+                cursor.callproc("App_Users_ResetPassword", [uname, new_pass])
+                result = cursor.fetchone()[0]
+
+            # Add everything to the database
+            connection.commit()
+        except (SQLAlchemyError, Exception) as e:
+            connection.rollback()
+            result = "Type" + str(type(e)) + str(e)
+        finally:
+            connection.close()
+    else:
+        result = "Current Password is Incorrect"
+
+    return jsonify({'result': result})
+
+
 @users.route('/update-email', methods=['POST'])
 @login_required
 @make_request_get
@@ -86,7 +123,7 @@ def update_email(**kwargs):
     # Establish connection to the database
     connection = db.engine.raw_connection()
     try:
-        # Add the user to the database
+        # Update the email address
         with connection.cursor() as cursor:
             cursor.callproc("App_Users_UpdateEmail", [uname, email])
             result = cursor.fetchone()[0]

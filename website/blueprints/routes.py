@@ -128,6 +128,12 @@ def update_email_route():
     return render_template('/partials/forms/update-email.html')
 
 
+@routes.route('/update-password')
+@login_required
+def update_password_route():
+    return render_template('/partials/forms/update-password.html')
+
+
 """ Bad form section """
 @routes.route('/add-tag-to-photo')
 @login_required
