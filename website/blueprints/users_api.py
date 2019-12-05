@@ -8,7 +8,7 @@ from website.blueprints.decorators import login_required, not_logged, validate_e
 from website.functions.email import send_mail
 from smtplib import SMTPException
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
-from flask import jsonify, Blueprint, session, render_template, request
+from flask import jsonify, Blueprint, session, render_template, request, redirect, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -221,25 +221,29 @@ def validate_user(token):
     # Establish connection to the database
     connection = db.engine.raw_connection()
     try:
-        # Update Users Verification
-        username = f_token.validate_token(token, expiration=86400)  # Token lasts for 1 day
+        # Retrieve username from token
+        username = f_token.validate_token_inf(token)
+
+        # Update Verification
         with connection.cursor() as cursor:
             cursor.callproc("App_Users_UpdateVerification", [username])
             result = cursor.fetchone()[0]
 
         # Add everything to the database
         connection.commit()
-    except SignatureExpired:
-        result = "Token is expired"
     except BadTimeSignature:
         result = "Token provided is not valid"
-    except SQLAlchemyError:
+    except (SQLAlchemyError, Exception) as e:
         connection.rollback()
-        result = "Database error"
+        result = "Database/Unknown error"
     finally:
         connection.close()
 
-    return result
+    if result not in ('Already Verified', 'Verified'):
+        return render_template('/partials/errors/error_message.html', title="Invalid Token", section_title="Bad Token",
+                               message="The link used to verify the user is invalid.")
+    else:
+        return redirect(url_for('routes.login'))
 
 
 @users.route('/send-password-reset', methods=['POST'])

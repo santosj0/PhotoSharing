@@ -17,3 +17,8 @@ def generate_token(word=generate_random_string()):
 def validate_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     return serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=expiration)
+
+
+def validate_token_inf(token):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'])
