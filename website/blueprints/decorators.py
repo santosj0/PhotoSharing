@@ -195,6 +195,21 @@ def login_required(f):
     return decorated_function
 
 
+def not_logged_post(f):
+    """
+        Only non-logged in users may access this page
+        :return: The desired route or a redirect to the homepage
+        """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('logged_in') is None:
+            return f(*args, **kwargs)
+        return jsonify({'result': 'Logged in'})
+
+    return decorated_function
+
+
 def not_logged(f):
     """
     Only non-logged in users may access this page

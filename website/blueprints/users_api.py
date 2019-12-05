@@ -8,7 +8,7 @@ from website.blueprints.decorators import login_required, not_logged, validate_e
 from website.functions.email import send_mail
 from smtplib import SMTPException
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
-from flask import jsonify, Blueprint, session, render_template, request, redirect, url_for
+from flask import jsonify, Blueprint, session, render_template, request, redirect, url_for, Markup
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -249,7 +249,8 @@ def validate_user(token):
 @users.route('/send-password-reset', methods=['POST'])
 @not_logged
 @make_request_get
-@validate_text_numbers('username')
+@keyword_exist(['username'])
+@validate_text_numbers('username', message="Invalid Username. Only letters, numbers, hyphens, and underscores only.")
 def send_password_reset(**kwargs):
     # Grab the variables
     params = kwargs['request_get']
@@ -279,7 +280,12 @@ def send_password_reset(**kwargs):
             if result == 0:
                 raise SMTPException("Email not valid")
 
-            result = "Email sent"
+            # Modifies email
+            email = output['email']
+            length = len(email.split('@')[0])
+            email = email[0] + "*" * len(email[1:length]) + email[length:]
+
+            result = {'message': "Email sent", 'email': email}
 
         except (SMTPException, Exception) as e:
             result = str(e)
@@ -294,46 +300,62 @@ def send_password_reset(**kwargs):
 @not_logged
 @make_request_get
 def validate_reset_password(token, **kwargs):
-    # Verifies that the token is valid
+    # Specifies that username needs to be over written or then is an error
     uname = None
+
+    # Verifies that the token is valid
     try:
         uname = f_token.validate_token(token, expiration=600)  # Token lasts for 5 minutes
         result = "Valid"
     except SignatureExpired:
-        result = "Token is expired"
+        result = Markup("The link is only valid for 5 minutes. Please refer to <a href='" +
+                        url_for('routes.forgot_password') +
+                        "'>forgotten password</a> to receive a new link.")
     except BadTimeSignature:
-        result = "Token provided is not valid"
+        result = "The link used is invalid."
 
+    # Invalid Token
+    if result is not "Valid" or not uname:
+        return render_template('/partials/errors/error_message.html',
+                               title="Reset Password",
+                               section_title="Token Error",
+                               message=result)
+
+    # Valid Token
     if request.method == "GET":
-        if result is not "Valid" or uname is None:
-            return jsonify({'result': result})
-        else:
-            return render_template('/partials/bad_forms/reset-password.html')
+        return render_template('/partials/forms/reset-password.html')
 
     elif request.method == "POST":
-        if result is not "Valid" or uname is None:
-            return jsonify({'result': result})
+        # Get variables
+        params = kwargs['request_get']
+        password = bcrypt.generate_password_hash(params['password']).decode('utf-8')
+
+        # Establish connection to the database
+        connection = db.engine.raw_connection()
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc("App_Users_ResetPassword", [uname, password])
+                result = cursor.fetchone()[0]
+
+            # Add everything to the database
+            connection.commit()
+        except (SQLAlchemyError, Exception) as e:
+            connection.rollback()
+            result = "SQL error"
+
+        # Display result
+        if result != "Password Updated":
+            return render_template('/partials/errors/error_message.html',
+                                   title="Reset Password",
+                                   section_title="Token Error",
+                                   message=result)
         else:
-            params = kwargs['request_get']
-            password = bcrypt.generate_password_hash(params['password']).decode('utf-8')
-
-            # Establish connection to the database
-            connection = db.engine.raw_connection()
-            try:
-                with connection.cursor() as cursor:
-                    cursor.callproc("App_Users_ResetPassword", [uname, password])
-                    result = cursor.fetchone()[0]
-
-                # Add everything to the database
-                connection.commit()
-            except (SQLAlchemyError, Exception) as e:
-                connection.rollback()
-                result = str(e)
-
-            return jsonify({'result': result})
-
-    else:
-        return jsonify({'result': 'GET and POST only methods'})
+            return render_template('/partials/errors/error_message.html',
+                                   title="Reset Password",
+                                   section_title="Password Reset. ",
+                                   message=Markup("Password has been reset. You may now <a href='" +
+                                                  url_for('routes.login') +
+                                                  "'>log in</a> with the new password."))
 
 
 @users.route('/delete-user', methods=['POST'])

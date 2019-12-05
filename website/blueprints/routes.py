@@ -134,23 +134,17 @@ def update_password_route():
     return render_template('/partials/forms/update-password.html')
 
 
+@routes.route('/forgot-password')
+@not_logged
+def forgot_password():
+    return render_template('/partials/forms/forgot-password.html')
+
+
 """ Bad form section """
 @routes.route('/add-tag-to-photo')
 @login_required
 def add_tag_route():
     return render_template('/partials/bad_forms/add-tag.html')
-
-
-@routes.route('/add-comment-to-photo')
-@login_required
-def add_comment_route():
-    return render_template('/partials/bad_forms/comment-photo.html')
-
-
-@routes.route('/forgot-password')
-@not_logged
-def forgot_password():
-    return render_template('/partials/bad_forms/forgot-password.html')
 
 
 @routes.route('/activate')
