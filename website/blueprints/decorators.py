@@ -165,6 +165,21 @@ def make_request_get(f):
     return decorated_function
 
 
+def login_required_post(f):
+    """
+    Returns to the route if the user is logged_in. Otherwise, return a false json result
+    :return: Either a failure response, or the desired webpage
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('logged_in'):
+            return f(*args, **kwargs)
+        return jsonify({'result': 'Not logged in'})
+
+    return decorated_function
+
+
 def login_required(f):
     """
     Returns to the route if the user is logged_in. Otherwise, redirects to login page

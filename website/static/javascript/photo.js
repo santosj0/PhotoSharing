@@ -147,16 +147,30 @@ $(document).ready(function(){
 
                 // Failure result
                 if(result != "Comment Added") {
+
+                    // Generate error messages
                     if(result == "photo_id does not exist") {
                         m_body = "Issue with the comment form. Please try again later.";
                     }else if(result == "comment does not exist") {
                         m_body = "Comment is empty.";
                         $('#comment').attr('placeholder', "Write your comment here...");
+                    }else if(result == 'Not logged in'){
+                        m_body = "User is not logged in. Redirecting you to login page...";
                     }else {
                         m_body = upperFirst(result);
                     }
+
+                    // Display error messages
                     dangerMessage("Comment Error. ", m_body);
                     window.scrollTo(0, 0);
+
+                    // Redirect to login page
+                    if(result == 'Not logged in') {
+                        setTimeout(function(){
+                            window.location.replace('/login');
+                        }, 2000);
+                    }
+
                 }
 
                 // Successful Result

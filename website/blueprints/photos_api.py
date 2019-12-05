@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from website.blueprints.decorators import login_required, check_file_type, html_escape_values, uploader_only, \
-    keyword_exist, uploader_commenter_only, make_request_get
+    keyword_exist, uploader_commenter_only, make_request_get, login_required_post
 from website import app, db
 
 
@@ -229,7 +229,7 @@ def add_tag_to_photo(**kwargs):
 
 """ Comment Section """
 @photos.route('/add-comment-to-photo', methods=['POST'])
-@login_required
+@login_required_post
 @html_escape_values
 @keyword_exist(['photo_id', 'comment'])
 def add_comment_photo(**kwargs):
