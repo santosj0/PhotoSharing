@@ -15,7 +15,7 @@ share their images as well.
 ## Table of Content
 - [PhotoSharing](#photosharing)
     - [Dependencies](#dependencies)
-    - [Added Files/Directories](#added-files/directories)
+    - [Added Files/Directories](#added-filesdirectories)
     - [File Descriptions](#file-descriptions)
     - [Future Plans](#future-plans)
 </details>
