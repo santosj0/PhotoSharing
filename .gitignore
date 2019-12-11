@@ -12,7 +12,3 @@ login.txt
 
 # Pycharm
 .idea
-
-# Ignore the temporary and bad forms
-website/templates/partials/bad_forms
-website/templates/partials/temp_forms
