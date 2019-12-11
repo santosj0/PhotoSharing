@@ -42,7 +42,15 @@ Line 2: [Port number to tunnel into the network] Example: 22
 Line 3: [Username to access the network] Example: someguy5  
 Line 4: [Password tied to the username] Example: somepassword  
 Line 5: [Email address for site sending] Example: random@provider.com  
-Line 6: [Password tied to the email address] Example somepassword2  
+Line 6: [Password tied to the email address] Example somepassword2
+<br><br>
+_Example_<br><br>
+host.location.com  
+22  
+someguy5  
+somepassword  
+random@provider.com  
+somepassword2
 
 2. A directory called users that is stored under website/static/images. This is the location where the user account 
 folders will be stored.
